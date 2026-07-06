@@ -1,0 +1,124 @@
+# Phase 7: ソフトウェア設計・テスト・クリーンコード
+
+## 概要
+
+このPhaseでは、「動くコード」を「良いコード」に育てる技術を学びます。
+コードは一度書いたら終わりではありません。読まれ、修正され、拡張されます。
+良い設計とテストは、その変化に耐えるコードを作る技術です。
+
+## 前提知識
+
+- Phase 6 修了済みであること
+- Pythonのオブジェクト指向(クラス、継承、インターフェース)を理解していること
+- 関数、モジュール、パッケージを使ったプログラムを書けること
+- 基本的なデータ構造(リスト、辞書、集合)を扱えること
+
+## 目安期間
+
+**6週間**
+
+| 週 | 内容 |
+|----|------|
+| 第1週 | Lesson 01〜02: 良いコードの基礎、関数・クラス設計 |
+| 第2週 | Lesson 03〜04: SOLID原則、デザインパターン入門 |
+| 第3週 | Lesson 05〜06: アーキテクチャ入門、テスト戦略 |
+| 第4週 | Lesson 07〜08: TDD実践、リファクタリング技法 |
+| 第5週 | Lesson 09〜10: コードレビュー、ドキュメンテーション |
+| 第6週 | 演習課題・総仕上げプロジェクト |
+
+## 学習目標
+
+このPhaseを修了すると、以下ができるようになります。
+
+**設計スキル**
+- 良いコードと悪いコードの違いを言語化できる
+- 単一責任原則をはじめとするSOLID原則を実際のコードに適用できる
+- Strategy、Factory、Observer、Adapterパターンを適切な場面で使える
+- レイヤードアーキテクチャで依存関係を整理できる
+
+**テストスキル**
+- テストピラミッドに基づいたテスト戦略を立てられる
+- pytestで単体テスト・統合テストを書ける
+- TDDのRed-Green-Refactorサイクルで開発できる
+- モックを使って外部依存を切り離したテストを書ける
+
+**リファクタリングスキル**
+- コードスメルを発見し、名前を付けられる
+- 小さく安全なステップでリファクタリングできる
+- テストを安全網として活用できる
+
+**チームワークスキル**
+- コードレビューで建設的なフィードバックを与えられる
+- ADR(Architecture Decision Record)で設計判断を記録できる
+
+## ディレクトリ構成
+
+```
+phase7-software-design/
+├── README.md                    # このファイル
+├── lessons/
+│   ├── 01-what-is-good-code.md          # 良いコードとは何か
+│   ├── 02-function-class-design.md      # 関数・クラス設計の原則
+│   ├── 03-solid-principles.md           # SOLID原則
+│   ├── 04-design-patterns.md            # デザインパターン入門
+│   ├── 05-architecture-intro.md         # アーキテクチャ入門
+│   ├── 06-test-strategy.md              # テスト戦略
+│   ├── 07-tdd-practice.md               # TDD実践
+│   ├── 08-refactoring-techniques.md     # リファクタリング技法
+│   ├── 09-code-review.md                # コードレビュー
+│   └── 10-documentation-adr.md         # ドキュメンテーションとADR
+├── exercises/
+│   ├── ex01-naming.py                   # 命名リファクタリング
+│   ├── ex02-single-responsibility.py    # 単一責任原則
+│   ├── ex03-solid-violations.py         # SOLID違反の修正
+│   ├── ex04-design-patterns.py          # パターン適用
+│   ├── ex05-write-tests.py              # テストを書く
+│   └── solutions/
+│       ├── ex01-naming-solution.py
+│       ├── ex02-single-responsibility-solution.py
+│       ├── ex03-solid-violations-solution.py
+│       ├── ex04-design-patterns-solution.py
+│       └── ex05-write-tests-solution.py
+└── project/
+    ├── README.md                        # プロジェクト説明
+    ├── legacy/                          # リファクタリング対象のレガシーコード
+    │   ├── order_system.py
+    │   ├── user_manager.py
+    │   └── report_generator.py
+    └── refactored/                      # リファクタリング後の置き場
+        └── .gitkeep
+```
+
+## 修了条件チェックリスト
+
+以下を全て達成したらPhase 7修了です。
+
+### 知識確認
+- [ ] 凝集度(cohesion)と結合度(coupling)の違いを説明できる
+- [ ] SOLID原則の各文字が何を表すか言える
+- [ ] Strategy パターンと Factory パターンの使い分けを説明できる
+- [ ] テストピラミッドの3層を説明できる
+- [ ] TDDのRed-Green-Refactorサイクルを説明できる
+- [ ] コードスメルを5つ以上挙げられる
+
+### 実技確認
+- [ ] 演習 ex01〜ex05 を全て完了した
+- [ ] 各演習で解答前に自分の回答を書いた
+- [ ] 総仕上げプロジェクトのレガシーコードに対してテストを書いた
+- [ ] テストを安全網にしてリファクタリングを完了した
+- [ ] リファクタリング後のコードについてADRを1つ書いた
+
+### アウトプット確認
+- [ ] 他の人のコードをレビューし、建設的なフィードバックを1件以上書いた
+- [ ] 自分のコードに対するレビューコメントに返答した
+
+## 使い方
+
+1. lessons/ を 01 から順に読む
+2. 各レッスンの「確認問題」に自分なりの答えを書く
+3. exercises/ の該当演習を実施する(解答を見るのは自力で試した後)
+4. 第6週に project/ の総仕上げに取り組む
+
+---
+
+次のPhase: Phase 8 — Web開発基礎(予定)

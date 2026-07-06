@@ -1,0 +1,32 @@
+# Python キャッシュ
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# テスト・カバレッジ
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# 環境変数（絶対にイメージに含めてはいけない）
+.env
+.env.*
+!.env.example
+
+# 開発用設定
+.git/
+.gitignore
+*.md
+!app/
+
+# エディタ
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

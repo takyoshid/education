@@ -1,0 +1,92 @@
+# ============================================================
+# 演習 03 参考解答: FastAPI + PostgreSQL + Redis の Compose 構成
+# ============================================================
+#
+# 起動方法:
+#   docker compose up --build
+#
+# バックグラウンドで起動:
+#   docker compose up --build -d
+#
+# 停止（データは保持）:
+#   docker compose stop
+#
+# 停止＆コンテナ削除（データは保持）:
+#   docker compose down
+#
+# 停止＆コンテナ＆ボリューム削除（データも削除）:
+#   docker compose down -v
+# ============================================================
+
+services:
+
+  # ---- Web アプリケーション (FastAPI) ----
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://appuser:apppass@db:5432/appdb
+      - REDIS_URL=redis://cache:6379
+    depends_on:
+      db:
+        # db のヘルスチェックが通過してから web を起動する
+        # depends_on だけでは「コンテナが起動した」だけで
+        # PostgreSQL が ready かどうかは保証されない
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    restart: on-failure
+    # 開発時はコードをマウントすることで、再ビルドなしに変更を反映できる
+    # 本番では volumes は不要（イメージにコードを含めるため）
+    # volumes:
+    #   - ./app:/app/app
+
+  # ---- データベース (PostgreSQL 16) ----
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=appuser
+      - POSTGRES_PASSWORD=apppass
+      - POSTGRES_DB=appdb
+    volumes:
+      # 名前付きボリュームでデータを永続化する
+      # docker compose down だけではこのボリュームは削除されない
+      # 削除するには docker compose down -v が必要
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # PostgreSQL が接続を受け付ける状態になっているか確認する
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s    # 5 秒ごとにチェック
+      timeout: 5s     # タイムアウトまでの秒数
+      retries: 5      # 5 回失敗したら unhealthy とみなす
+      start_period: 5s  # 起動直後の猶予時間
+    restart: on-failure
+
+  # ---- キャッシュ (Redis 7) ----
+  cache:
+    image: redis:7-alpine
+    # Redis のデータを永続化する場合は以下のコメントを解除する
+    # volumes:
+    #   - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+    restart: on-failure
+
+# ---- ボリューム定義 ----
+# ここで宣言されたボリュームは Docker が管理する名前付きボリュームになる
+# ホストの特定パスに依存しないため、どの環境でも同じように動く
+volumes:
+  db-data:
+    # driver: local はデフォルトなので省略可能
+    # 明示することで意図を示すことができる
+    driver: local
+  # Redis データを永続化する場合はコメントを解除する
+  # redis-data:
+  #   driver: local

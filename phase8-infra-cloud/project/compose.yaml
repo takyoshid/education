@@ -1,0 +1,67 @@
+# ============================================================
+# 総仕上げプロジェクト: タスク管理 API の Docker Compose 構成
+# ============================================================
+#
+# 起動:       docker compose up --build
+# バックグラウンド: docker compose up --build -d
+# ログ確認:   docker compose logs -f
+# 停止:       docker compose down
+# 全削除:     docker compose down -v
+#
+# 動作確認:
+#   curl http://localhost:8000/
+#   curl http://localhost:8000/health
+#   curl http://localhost:8000/docs  (Swagger UI)
+# ============================================================
+
+services:
+
+  # ---- Web アプリケーション ----
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://appuser:apppass@db:5432/appdb
+      - REDIS_URL=redis://cache:6379
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    # アプリが落ちた場合は自動で再起動する
+    restart: on-failure:3
+
+  # ---- PostgreSQL ----
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=appuser
+      - POSTGRES_PASSWORD=apppass
+      - POSTGRES_DB=appdb
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: on-failure
+
+  # ---- Redis ----
+  cache:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+    restart: on-failure
+
+volumes:
+  db-data:
+    driver: local
