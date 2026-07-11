@@ -325,6 +325,22 @@ python3 tool.py data.txt --lines 5 --verbose
 
 ---
 
+## 💡 コラム: import antigravity — 公式イースターエッグ
+
+ターミナルで試してみてください:
+
+```bash
+python3 -c "import this"
+```
+
+「The Zen of Python(Python の禅)」という19箇条の設計哲学の詩が表示されます。「Beautiful is better than ugly.(醜いより美しいほうがいい)」「Explicit is better than implicit.(暗黙より明示がいい)」— Python コミュニティの価値観が詰まった、標準ライブラリ公式のイースターエッグです。
+
+さらに `import antigravity` を実行すると、ブラウザが開いて「Python を覚えたら空を飛べた」という有名な Web コミック(xkcd)が表示されます。
+
+遊び心の裏にあるメッセージは本物です。Python は「**バッテリー同梱(batteries included)**」哲学 — 電池を別途買わなくても箱から出してすぐ遊べるおもちゃのように、標準ライブラリだけで実用的な仕事ができるよう設計されています。`import` の向こう側には、先人たちが30年かけて磨いた道具箱が待っています。
+
+---
+
 ## まとめ
 
 - `.py` ファイルがモジュール、`__init__.py` 入りディレクトリがパッケージ
