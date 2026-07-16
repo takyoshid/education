@@ -115,7 +115,7 @@
 |---|----------|--------------|------|
 | 00 | [ラボ環境を作る](lessons/00-lab-setup.md) | 隔離ラボ・やられ役アプリ・Burp/mitmproxy・倫理 | 2〜3h |
 | 01 | [攻撃者の思考と脅威モデリング](lessons/01-attacker-mindset-threat-modeling.md) | Kill Chain・ATT&CK・STRIDE・攻撃面 | 4〜5h |
-| 02 | [暗号技術の実践と誤用](lessons/02-applied-cryptography.md) | 対称/公開鍵/ハッシュ/署名/TLS/鍵管理 | 5〜6h |
+| 02 | [暗号技術の実践と誤用](lessons/02-applied-cryptography.md) | 対称/公開鍵/RSA/ECC/署名/TLS/ビットコイン/量子耐性 | 5〜6h |
 | 03 | [ネットワークと TLS の攻防](lessons/03-network-security.md) | nmap/Wireshark/中間者攻撃/DNS/ゼロトラスト | 4〜5h |
 | 04 | [ブラウザのセキュリティモデル](lessons/04-browser-security-model.md) | 同一オリジン・Cookie・CORS・CSP | 4〜5h |
 | 05 | [インジェクション攻防](lessons/05-injection.md) | SQLi・コマンド・XXE を実際に攻撃して直す | 6〜7h |
