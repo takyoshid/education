@@ -1,25 +1,42 @@
 # macOS
 .DS_Store
 
-# 環境変数・秘密情報
+# Windows
+Thumbs.db
+
+# Secrets
 .env
 .env.*
 !.env.example
 *.pem
 *.key
+*.p12
+*.pfx
 credentials*.json
 
 # Python
 __pycache__/
-*.pyc
+*.py[cod]
 .venv/
 venv/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 
-# Node.js
+# Node
 node_modules/
 dist/
+build/
+.next/
 
-# エディタ
+# IDE
 .vscode/
 .idea/
+
+# Logs
+*.log
+
+# Cache
+.cache/

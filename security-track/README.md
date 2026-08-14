@@ -143,6 +143,7 @@
 | exercises/04-owasp-lab.md | OWASP Juice Shop で複数の脆弱性を攻略する |
 | exercises/05-pentest-report.md | 許可された練習環境の診断レポートを書く |
 | exercises/06-incident-response.md | ログから侵害を特定しタイムラインを再構築する |
+| exercises/07-blockchain-pqc.md | ビットコインの署名検証を実装し、耐量子暗号(PQC)を走らせる |
 
 `exercises/solutions/` に解説付きの模範解答があります。**必ず自分で手を動かしてから**解答を見てください。
 
@@ -199,6 +200,7 @@ pip install mitmproxy                                    # 軽量な代替
 brew install nmap wireshark                              # Mac(Ubuntu は apt)
 python3 --version                                        # 3.10+ 推奨
 pip install requests pyjwt cryptography scapy pip-audit
+pip install liboqs-python                                # 演習07(耐量子暗号)用。任意
 
 # コンテナ/イメージ脆弱性スキャン
 brew install aquasecurity/trivy/trivy
