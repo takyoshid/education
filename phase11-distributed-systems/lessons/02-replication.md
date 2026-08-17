@@ -343,7 +343,7 @@ S3 は、1 つのオブジェクトを最低 3 つのアベイラビリティゾ
 2. **分岐は必ず起きる。**「起きないようにする」のではなく、**起きたときにどうするか**を決めておく。決めていなければ、暗黙の Last Write Wins になり、**誰かの書き込みが黙って消えます**。
 3. **収束させるべきものと、させなくてよいものを分ける。** 口座残高は必ず収束させる必要があります。しかし「学習した傾向」や「おすすめの重み」は、拠点ごとに違っていても構わないかもしれません。これは Lesson 03 の「整合性は操作ごとに選ぶ」に直結します。
 
-> 同じ「並列化」という素材を、[Phase 8 Lesson 01](../../phase8-concurrency-reliability/lessons/01-concurrency-models.md) では concurrency と parallelism の違いとして、[Phase 3 Lesson 07](../../phase3-ai-era/lessons/07-engineer-value-in-ai-era.md) では「同期できない個の価値」として扱っています。一つの設定が、技術のレイヤーを変えるたびに違う顔を見せるのは、原作がそれだけ深く考えられている証拠です。
+> 同じ「並列化」という素材を、[Phase 8 Lesson 01](../../phase8-concurrency-reliability/lessons/01-concurrency-models.md) では concurrency と parallelism の違いとして、[Phase 4 Lesson 07](../../phase4-ai-era/lessons/07-engineer-value-in-ai-era.md) では「同期できない個の価値」として扱っています。一つの設定が、技術のレイヤーを変えるたびに違う顔を見せるのは、原作がそれだけ深く考えられている証拠です。
 
 ---
 

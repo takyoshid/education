@@ -40,9 +40,9 @@
 | [0](phase0-orientation/) | オリエンテーション — 学習法とエンジニアという職業 | 1週間 |
 | [1](phase1-computer-basics/) | コンピュータの仕組みと CLI / Linux 基礎 | 3週間 |
 | [2](phase2-programming/) | プログラミング基礎(Python) | 8週間 |
-| [3](phase3-ai-era/) | AI 時代のソフトウェア開発 | 3週間 + 継続 |
-| [4](phase4-algorithms/) | データ構造とアルゴリズム | 8週間 |
-| [5](phase5-dev-tools/) | Git / GitHub と開発ツール | 3週間 + 継続 |
+| [3](phase3-dev-tools/) | Git / GitHub と開発ツール | 3週間 + 継続 |
+| [4](phase4-ai-era/) | AI 時代のソフトウェア開発 | 3週間 + 継続 |
+| [5](phase5-algorithms/) | データ構造とアルゴリズム | 8週間 |
 | [6](phase6-web-frontend/) | Web の仕組みとフロントエンド(HTML/CSS/JS/TypeScript) | 8週間 |
 | [7](phase7-backend-db/) | バックエンドとデータベース(API / SQL) | 8週間 |
 | [8](phase8-concurrency-reliability/) | 並行処理と信頼性 | 4週間 |
@@ -60,16 +60,16 @@
 | [英語とグローバルキャリア](english-track/) | 技術英語、レジュメ、コーディング/行動/システム設計面接 | **Phase 2 修了後**から毎日 |
 | [Phase横断プロジェクト](longitudinal-project/) | 同じプロダクトを Phase 2 から 12 まで変更・運用し続ける | **Phase 2 修了後**から継続 |
 
-### Phase 3 と Phase 5 は「一度で終わらせない」Phase です
+### Phase 3 と Phase 4 は「一度で終わらせない」Phase です
 
-この 2 つは、他の Phase と性質が違います。**Phase 2 の直後に始めて、そのあと本編の最後まで使い続けます。**
+この 2 つは、他の Phase と性質が違います。**Phase 2 の直後に始めて、そのあと本編の最後まで使い続けます。**この 2 つを早い位置に置いているのは、Phase 2 の時点で既に必要になるからです。
 
 | Phase | なぜ早いのか | どう進めるか |
 |---|---|---|
-| [3](phase3-ai-era/) AI活用 | 実際には Phase 2 の翌日から AI を使う。基礎力の形成期こそ「AI に答えを出させない使い方」が要る | Lesson 01・02・05 を先に。残りは Phase 6〜7、Phase 12 の時期に段階的に |
-| [5](phase5-dev-tools/) Git | 最初のコードを書いた時点から履歴管理が必要 | 最小セットを一巡し、以降は毎日の作業で使い続ける |
+| [3](phase3-dev-tools/) Git | Phase 2 の演習とプロジェクトを、最初から Git で管理するため | 最小セットを一巡し、以降は毎日の作業で使い続ける |
+| [4](phase4-ai-era/) AI活用 | 実際には Phase 2 の翌日から AI を使う。基礎力の形成期こそ「AI に答えを出させない使い方」が要る | Lesson 01・02・05 を先に。残りは Phase 7、Phase 12 の時期に段階的に |
 
-**特に Phase 3 を後回しにしないでください。**基礎力の形成期に AI へ答えを出させると、「動くが説明できない」状態が固定されます。しかも本人はそれに気づけません。
+**特に Phase 4 を後回しにしないでください。**基礎力の形成期に AI へ答えを出させると、「動くが説明できない」状態が固定されます。しかも本人はそれに気づけません。
 
 ## 各 Phase の構成
 
@@ -94,15 +94,15 @@ phaseN-<name>/
 
 1. **Phase 0 から番号順に進める**(番号が学習順です)
 2. **Phase 2 を終えたら、[英語トラック](english-track/)と[Phase横断プロジェクト](longitudinal-project/)を並走させ始める**
-3. Phase 3(AI活用)と Phase 5(Git)は一度で終わらせず、以降ずっと使い続ける
+3. Phase 4(AI活用)と Phase 3(Git)は一度で終わらせず、以降ずっと使い続ける
 4. 各レッスンの演習を解いてから解答を見る
 5. Phase 末のチェックリストに加え、[客観的到達度評価](assessment/)のPhaseゲートを満たしてから次へ進む
 6. わからないことは 15 分自力で調べ、それでも解けなければ質問する(質問の仕方も Phase 0 で学ぶ)
 
 ```
 本編   Phase 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12
-                        ↑         ↑
-                     AI活用      Git      ← 始めたら最後まで使い続ける
+                        ↑   ↑
+                       Git  AI活用   ← 始めたら最後まで使い続ける
 
 並走                    └─▶ 英語トラック / Phase横断プロジェクト ─────▶ (ずっと)
                             (Phase 2 修了時点から)
@@ -114,11 +114,11 @@ phaseN-<name>/
 
 ### 1. コーディング面接の演習量(未着手)
 
-Phase 4 の演習は**概念の理解には十分**ですが、**面接対策としての問題数が足りません。**
+Phase 5 の演習は**概念の理解には十分**ですが、**面接対策としての問題数が足りません。**
 
 グローバル企業のコーディング面接を突破する水準としては、一般に **LeetCode の Medium を中心に 150〜300 問**程度を解くことが実質的な要件とされています。この教材にはその量がなく、到達量の目安や外部演習への導線も用意できていません。
 
-**当面の補い方**: Phase 4 と並行して、外部の演習プラットフォームで量を積んでください。定番は次のとおりです。
+**当面の補い方**: Phase 5 と並行して、外部の演習プラットフォームで量を積んでください。定番は次のとおりです。
 
 | リソース | 内容 |
 |---|---|
@@ -126,7 +126,7 @@ Phase 4 の演習は**概念の理解には十分**ですが、**面接対策と
 | [LeetCode](https://leetcode.com/) | 問題数が最多。企業別の出題傾向も見られる |
 | [Blind 75](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1orEU) | 最小限に絞りたい場合の 75 問 |
 
-Phase 4 で学ぶパターン(二分探索、two pointers、スライディングウィンドウ、DFS/BFS、動的計画法)を**先に理解してから**量を積むのが効率的です。順序を逆にすると、解法の暗記になります。
+Phase 5 で学ぶパターン(二分探索、two pointers、スライディングウィンドウ、DFS/BFS、動的計画法)を**先に理解してから**量を積むのが効率的です。順序を逆にすると、解法の暗記になります。
 
 ### 2. 英語アウトプットの並走の仕組み(未整備)
 
@@ -142,7 +142,7 @@ Phase 4 で学ぶパターン(二分探索、two pointers、スライディン�
 
 **当面の補い方**: [英語トラックの推奨学習ペース](english-track/#推奨学習ペース)を**今すぐ開いて**、次の 2 つだけでも Phase 2 の時点から始めてください。
 
-1. **コミットメッセージと PR の説明をすべて英語で書く**(Phase 5 の Git 開始時から。追加コストがほぼゼロで、毎日続く)
+1. **コミットメッセージと PR の説明をすべて英語で書く**(Phase 3 の Git 開始時から。追加コストがほぼゼロで、毎日続く)
 2. **英語の技術記事を週 1 本読み、3 行で要約して記録する**(記録を残すことが重要)
 
 そして各 Phase の証拠フォルダ `evidence/phase-N/` に `english-log.md` を自分で追加し、継続の記録を残してください。仕組みが無いなら、自分で作るのが最短です。
@@ -159,7 +159,7 @@ Phase 4 で学ぶパターン(二分探索、two pointers、スライディン�
 
 ```bash
 ruby scripts/validate_curriculum.rb
-python3 -m compileall -q phase2-programming phase4-algorithms phase7-backend-db \
+python3 -m compileall -q phase2-programming phase5-algorithms phase7-backend-db \
   phase9-software-design phase10-infra-cloud phase8-concurrency-reliability \
   phase11-distributed-systems longitudinal-project
 ```

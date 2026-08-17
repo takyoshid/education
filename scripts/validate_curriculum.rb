@@ -52,8 +52,8 @@ end
 
 assessed_phases = %w[
   phase2-programming
-  phase3-ai-era
-  phase4-algorithms
+  phase4-ai-era
+  phase5-algorithms
   phase6-web-frontend
   phase7-backend-db
   phase8-concurrency-reliability

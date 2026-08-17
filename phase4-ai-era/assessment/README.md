@@ -1,4 +1,4 @@
-# Phase 3 実技試験 — Provider Migrationと安全性回帰
+# Phase 4 実技試験 — Provider Migrationと安全性回帰
 
 - 制限時間: 180分
 - 実API不要。提供するfake providerだけで完了可能

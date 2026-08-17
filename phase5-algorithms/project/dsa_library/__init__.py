@@ -1,6 +1,6 @@
 """
 DSA Library: 自作データ構造ライブラリ
-Phase 4 総仕上げプロジェクト
+Phase 5 総仕上げプロジェクト
 """
 
 from .linked_list import SinglyLinkedList, DoublyLinkedList

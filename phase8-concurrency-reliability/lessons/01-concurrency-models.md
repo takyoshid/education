@@ -243,7 +243,7 @@ I/O 待ちが支配的、接続数が数千〜数万
 
 あなたのシステムが遅いとき、問うべきはこうです。**「手が足りないのか、待ち時間が無駄なのか」**。前者ならプロセスを増やす(parallelism)。後者なら待ち方を変える(concurrency)。この 2 つを取り違えると、増やしても速くならないか、複雑さだけが増えます。
 
-> タチコマの「並列化」については、[Phase 11 Lesson 02](../../phase11-distributed-systems/lessons/02-replication.md) でレプリケーションの観点から、[Phase 3 Lesson 07](../../phase3-ai-era/lessons/07-engineer-value-in-ai-era.md) で「個の価値」の観点から、それぞれ別の角度で扱います。
+> タチコマの「並列化」については、[Phase 11 Lesson 02](../../phase11-distributed-systems/lessons/02-replication.md) でレプリケーションの観点から、[Phase 4 Lesson 07](../../phase4-ai-era/lessons/07-engineer-value-in-ai-era.md) で「個の価値」の観点から、それぞれ別の角度で扱います。
 
 ---
 

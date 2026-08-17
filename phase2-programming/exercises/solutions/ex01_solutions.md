@@ -230,7 +230,7 @@ In [2]: import requests
 In [3]: requests.get?
 ```
 
-Phase 4 のアルゴリズム学習では `%timeit` が計測に役立ちます。
+Phase 5 のアルゴリズム学習では `%timeit` が計測に役立ちます。
 
 ---
 

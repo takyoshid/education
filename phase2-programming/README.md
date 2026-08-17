@@ -135,7 +135,7 @@ project/
 
 ## 学習の進め方
 
-このPhaseから、すべての演習とプロジェクトをGitで管理します。まずは `init / status / add / commit / log` の最小セットだけを使い、詳細はPhase 5で学びます。また、通常プロジェクトと並行して [Phase横断プロジェクト](../longitudinal-project/) の `v0.2` に着手してください。
+このPhaseから、すべての演習とプロジェクトをGitで管理します。まずは `init / status / add / commit / log` の最小セットだけを使い、詳細はPhase 3で学びます。また、通常プロジェクトと並行して [Phase横断プロジェクト](../longitudinal-project/) の `v0.2` に着手してください。
 
 通常演習とプロジェクトの後、[Phase 2 実技試験](assessment/)を解答・AIなしで受験します。公開テストへの合格だけでなく、自分で境界値を追加し、保存失敗時の安全性を説明できることが修了条件です。
 

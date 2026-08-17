@@ -4,7 +4,7 @@
 各データ構造の性能を Python 標準ライブラリと比較する。
 
 実行方法:
-  cd phase4-algorithms/project
+  cd phase5-algorithms/project
   python3 benchmark.py
 """
 
@@ -315,7 +315,7 @@ def run_all_benchmarks():
     print()
     print("*" * 65)
     print("  データ構造 & アルゴリズム ベンチマーク")
-    print("  Phase 4 総仕上げプロジェクト")
+    print("  Phase 5 総仕上げプロジェクト")
     print("*" * 65)
 
     benchmark_search()
