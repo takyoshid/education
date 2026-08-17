@@ -58,6 +58,34 @@ jobs:
         # 代わりに教材側のコードが警告を出していないことを目視で保つ。
         run: python -m pytest -q
 
+  starter-contracts:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify public tests fail at intentional stubs
+        run: python scripts/validate_starter_contracts.py
+
+  reference-implementations:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run public tests against reference implementations
+        run: python scripts/validate_reference_implementations.py
+
   frontend-builds:
     runs-on: ubuntu-latest
     strategy:

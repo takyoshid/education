@@ -70,6 +70,8 @@ python3 demo.py
 python3 -m unittest discover -s tests -v
 ```
 
+自力で実装してテストを通した後は、[`exercises/solutions/`](exercises/solutions/) の参照実装と比較できます。参照実装は唯一の正解ではなく、不変条件、lock範囲、取消・retry・冪等性の設計を振り返るための一例です。
+
 ## 進め方
 
 各レッスンで、**まず壊れた挙動を再現し、その後に修正します。**

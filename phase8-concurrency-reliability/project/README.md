@@ -17,3 +17,5 @@
 cd starter
 python3 -m unittest discover -s tests -v
 ```
+
+完成後は [`solution/worker.py`](solution/worker.py) を参照実装として比較できます。先に公開テストを通し、自分のfailure分類と状態遷移を説明してから確認してください。

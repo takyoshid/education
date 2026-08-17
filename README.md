@@ -168,11 +168,25 @@ Phase 5 で学ぶパターン(二分探索、two pointers、スライディン�
 
 ## 教材自体の品質確認
 
-このリポジトリは、教材内リンク、Phase構造、Python構文、プロジェクトのテスト、フロントエンドbuildをCIで検査します。ローカルでは次を実行できます。
+CI の検査範囲は次のとおりです。
+
+| 対象 | CI で確認すること |
+|---|---|
+| 教材全体 | 教材内リンク、Phase 構造、対象ディレクトリ内の Python 構文 |
+| 完成済み Python 成果物 | Phase 2・7・9・10 の4プロジェクトについて、Python 3.12・3.13でテストが通ること |
+| 未実装 starter | Phase 8・11の公開演習・Phase 8プロジェクト・Phase横断プロジェクトについて、テストが収集・実行され、意図した未実装箇所で失敗すること |
+| 参照実装 | Phase 8・11の実行可能演習とPhase 8プロジェクトについて、同じ公開テストがすべて通ること |
+| フロントエンド完成版 | Phase 6 の React プロジェクトと演習の模範実装をbuildできること |
+
+未実装 starter は、公開テストが通ることを検査する対象ではありません。テスト未検出、import エラー、構文エラーを誤って「想定どおりの失敗」と扱わず、`NotImplementedError` のスタブまで到達することを専用検査で確認します。
+
+ローカルでは次を実行できます。
 
 ```bash
 ruby scripts/validate_curriculum.rb
 python3 -m compileall -q phase2-programming phase5-algorithms phase7-backend-db \
   phase9-software-design phase10-infra-cloud phase8-concurrency-reliability \
   phase11-distributed-systems longitudinal-project
+python3 scripts/validate_starter_contracts.py
+python3 scripts/validate_reference_implementations.py
 ```
