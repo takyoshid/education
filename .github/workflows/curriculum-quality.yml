@@ -1,0 +1,79 @@
+name: Curriculum quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  curriculum-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Validate internal links and structure
+        run: ruby scripts/validate_curriculum.rb
+      - name: Compile all Python examples
+        run: python -m compileall -q phase2-programming phase3-algorithms phase6-backend-db phase7-software-design phase8-infra-cloud phase12-concurrency-reliability longitudinal-project
+
+  python-projects:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 学習者が今インストールする Python は最新版であることが多い。
+        # 固定した依存が新しい Python でホイールを持たず、
+        # 環境構築だけで詰まる事故を防ぐため、複数バージョンで検査する。
+        python-version: ["3.12", "3.13"]
+        directory:
+          - phase2-programming/project
+          - phase6-backend-db/project
+          - phase7-software-design/project/refactored
+          - phase8-infra-cloud/project
+        include:
+          - directory: phase2-programming/project
+            install: pip install -r requirements.txt
+          - directory: phase6-backend-db/project
+            install: pip install -r requirements.txt
+          - directory: phase7-software-design/project/refactored
+            install: pip install -r ../../../phase2-programming/project/requirements.txt
+          - directory: phase8-infra-cloud/project
+            install: pip install -r requirements.txt -r requirements-dev.txt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install test dependencies
+        working-directory: ${{ matrix.directory }}
+        run: ${{ matrix.install }}
+      - name: Run tests
+        working-directory: ${{ matrix.directory }}
+        # -W error::DeprecationWarning は使わない(依存側の警告で落ちるため)。
+        # 代わりに教材側のコードが警告を出していないことを目視で保つ。
+        run: python -m pytest -q
+
+  frontend-builds:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        directory:
+          - phase5-web-frontend/project/stage2-react
+          - phase5-web-frontend/exercises/solutions/ex06-react-solution
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        working-directory: ${{ matrix.directory }}
+        run: npm install --ignore-scripts
+      - name: Build
+        working-directory: ${{ matrix.directory }}
+        run: npm run build

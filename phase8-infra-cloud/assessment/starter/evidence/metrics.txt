@@ -1,0 +1,4 @@
+before deploy: request_p95_ms=120 http_503_rate=0.001 db_pool_in_use=4
+after deploy:  request_p95_ms=2400 http_503_rate=0.180 db_pool_in_use=20
+traffic_rps remained between 9 and 11
+database_cpu_percent remained between 18 and 24

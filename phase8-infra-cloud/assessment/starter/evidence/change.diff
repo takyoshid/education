@@ -1,0 +1,4 @@
+- with get_db_connection() as connection:
+-     return repository.list_tasks(connection, user_id)
++ connection = pool.get_connection()
++ return repository.list_tasks(connection, user_id)
