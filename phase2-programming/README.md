@@ -25,7 +25,7 @@ Phase 2 を修了したとき、あなたは「コードを書ける人」から
 
 - **Phase 1 修了済み**であること
   - ターミナル操作(ファイル作成、ディレクトリ移動、パス概念)
-  - Git の基本(add / commit / push)
+  - Phase 0 で練習した Git の最小操作(init / status / add / commit / log)
   - Web の仕組みの概要(HTTP, ブラウザ, サーバー)
   - テキストエディタの操作(VS Code 推奨)
 
@@ -135,7 +135,7 @@ project/
 
 ## 学習の進め方
 
-このPhaseから、すべての演習とプロジェクトをGitで管理します。まずは `init / status / add / commit / log` の最小セットだけを使い、詳細はPhase 3で学びます。また、通常プロジェクトと並行して [Phase横断プロジェクト](../longitudinal-project/) の `v0.2` に着手してください。
+このPhaseから、すべての演習とプロジェクトをGitで管理します。Phase 0で練習した `init / status / add / commit / log` の最小セットを使い、意味のある変更ごとに履歴を残してください。ブランチ、GitHubへの`push`、Pull Request、復旧操作はPhase 3で学びます。また、通常プロジェクトと並行して [Phase横断プロジェクト](../longitudinal-project/) の `v0.2` に着手してください。
 
 通常演習とプロジェクトの後、[Phase 2 実技試験](assessment/)を解答・AIなしで受験します。公開テストへの合格だけでなく、自分で境界値を追加し、保存失敗時の安全性を説明できることが修了条件です。
 
