@@ -52,14 +52,14 @@ end
 
 assessed_phases = %w[
   phase2-programming
-  phase3-algorithms
-  phase5-web-frontend
-  phase6-backend-db
-  phase7-software-design
-  phase8-infra-cloud
-  phase11-ai-era
-  phase12-concurrency-reliability
-  phase13-distributed-systems
+  phase3-ai-era
+  phase4-algorithms
+  phase6-web-frontend
+  phase7-backend-db
+  phase8-concurrency-reliability
+  phase9-software-design
+  phase10-infra-cloud
+  phase11-distributed-systems
 ]
 assessed_phases.each do |name|
   assessment = ROOT.join(name, "assessment", "README.md")

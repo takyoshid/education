@@ -12,17 +12,17 @@
 | 0 | phase0-orientation | Sonnet | ✅ 完了(16ファイル) |
 | 1 | phase1-computer-basics | Sonnet | ✅ 完了(21ファイル) |
 | 2 | phase2-programming | Sonnet | ✅ 完了(約45ファイル) |
-| 3 | phase3-algorithms | Sonnet | ✅ 完了(41ファイル) |
-| 4 | phase4-dev-tools | Sonnet | ✅ 完了(20ファイル) |
-| 5 | phase5-web-frontend | Sonnet | ✅ 完了(58ファイル) |
-| 6 | phase6-backend-db | Sonnet | ✅ 完了(38ファイル) |
-| 7 | phase7-software-design | Sonnet | ✅ 完了(34ファイル) |
-| 8 | phase8-infra-cloud | Sonnet | ✅ 完了(31ファイル) |
-| 9 | phase9-projects-oss | Sonnet | ✅ 完了(17ファイル) |
-| 10 | phase10-global-career | Sonnet | ✅ 完了(24ファイル) |
-| 11 | phase11-ai-era | Sonnet | ✅ 完了(18ファイル) |
-| 12 | phase12-concurrency-reliability | Codex | ✅ 追加(並行処理・信頼性、障害注入演習、実技試験) |
-| 13 | phase13-distributed-systems | Opus | ✅ 追加(レプリケーション・整合性・分割・キャッシュ・合意) |
+| 3 | phase4-algorithms | Sonnet | ✅ 完了(41ファイル) |
+| 4 | phase5-dev-tools | Sonnet | ✅ 完了(20ファイル) |
+| 5 | phase6-web-frontend | Sonnet | ✅ 完了(58ファイル) |
+| 6 | phase7-backend-db | Sonnet | ✅ 完了(38ファイル) |
+| 7 | phase9-software-design | Sonnet | ✅ 完了(34ファイル) |
+| 8 | phase10-infra-cloud | Sonnet | ✅ 完了(31ファイル) |
+| 9 | phase12-projects-oss | Sonnet | ✅ 完了(17ファイル) |
+| 10 | english-track | Sonnet | ✅ 完了(24ファイル) |
+| 11 | phase3-ai-era | Sonnet | ✅ 完了(18ファイル) |
+| 12 | phase8-concurrency-reliability | Codex | ✅ 追加(並行処理・信頼性、障害注入演習、実技試験) |
+| 13 | phase11-distributed-systems | Opus | ✅ 追加(レプリケーション・整合性・分割・キャッシュ・合意) |
 | - | 最終レビュー・検収 | Opus | ✅ 完了 |
 
 ## 実行計画
@@ -45,6 +45,7 @@
 - 2026-07-06: 最終レビュー完了。全 Phase の README/lessons/exercises/solutions の存在を確認、内容の抜き取り検査で品質基準(日英併記・図解・思考プロセス解説)への適合を確認、ルート README に各 Phase へのリンクを追加
 - 2026-07-13: やる気を高める・美しいエピソードを追加。ルート+全12 Phase の README に「🌟 旅の始まりに」セクション(エイダ・ラブレス、ジョブズの点と点、ホッパーの1ナノ秒、Hello World の儀式、ブラックホール撮影、岩田聡、This is for everyone、SQLite の祝福、クヌースの小切手、Y2K の見えない勝利、カーマックのピザ、キャサリン・ジョンソン、AlphaGo 37手目/78手目)。さらに8レッスンに「🌟 コラム」を追加(手織りのコアロープメモリ、500マイルメール、MoMA の絵文字、火星バッジ、ボイジャー1号の遠隔修理、Minecraft、伊能忠敬、ケンタウロス・チェス)
 - 2026-07-11: 全 110 レッスンに「💡 コラム」を1本ずつ追加(まとめセクション直前)。各レッスンのテーマに対応する実話エピソード(アポロ11号、left-pad 事件、Knight Capital、GitLab 障害、Equifax 等)または例え話(JWT=ホテルのカードキー、依存性逆転=コンセント規格、テストピラミッド=健康診断 等)を書き下ろし。Phase 間の相互参照(例: git bisect→二分探索、TypeScript→アリアン5)も織り込み済み
+- 2026-08-18: Phase番号を学習順に揃える大規模リネーム。番号と学習順のずれを注意書きで補い続ける構造をやめ、ディレクトリごと採番し直した。新: 0 orientation / 1 computer-basics / 2 programming / 3 ai-era / 4 algorithms / 5 dev-tools / 6 web-frontend / 7 backend-db / 8 concurrency / 9 software-design / 10 infra-cloud / 11 distributed-systems / 12 projects-oss。英語(旧Phase 10)は番号を持たない english-track/ へ分離した(語学は本編の一区間ではなく全期間の並走のため)。AI活用を3に置いたのは「Phase 2 の翌日から使う」という受講時期をそのまま番号に反映するため。ログの日付行は当時の番号のまま残している。
 - 2026-08-18: 未整備領域の明示とカリキュラム表の整理。ルートREADMEのカリキュラム表を「本流(学習順)」と「並走」の2表に分割し、学習順の列を追加(番号が6→12→7と飛ぶのが誤植に見える構造だったため)。未着手の2領域(コーディング面接の演習量、英語並走の仕組み)を「既知の未整備領域」として明記し、Phase 3・Phase 10 のREADMEにも該当箇所で警告と当面の補い方を追加。
 - 2026-08-18: レビュー指摘の反映。(1) Phase 6の再現性欠陥3件を修正し、クリーン環境で41テスト通過。python-jose→PyJWT、passlib→bcrypt、datetime.utcnow→now(timezone.utc)。(2) Phase 2の欠番6演習に模範解答を追加。(3) Phase 12を他Phase水準へ拡充(平均23行→348行、演習1→5本)。(4) Phase 11をPhase 2から並走する構成へ変更(基礎力形成期こそAIの使い方が要るため)。(5) Phase 13「分散システムの基礎」を新設 — レプリケーション・整合性・分割・キャッシュ・合意はPhase 10の模範解答にのみ登場し、教えずに答えさせる状態だった。
 - 2026-08-17: 実効性改善。Phase 2・3・5〜8・11に客観実技試験とstarter/公開testを追加。Phase横断Learning Hub starterを追加。Phase 12「並行処理と信頼性」を新設。Phase 11をprovider非依存、offline fake、eval、prompt injection、最小権限中心へ改訂。教材構造CIを更新。
