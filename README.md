@@ -45,9 +45,23 @@
 | [12](phase12-concurrency-reliability/) | 並行処理と信頼性（推奨順はPhase 6の直後） | 4週間 |
 | [7](phase7-software-design/) | ソフトウェア設計・テスト・クリーンコード | 6週間 |
 | [8](phase8-infra-cloud/) | インフラ・クラウド・Docker・CI/CD・セキュリティ | 6週間 |
+| [13](phase13-distributed-systems/) | 分散システムの基礎（推奨順はPhase 8の直後） | 4週間 |
 | [9](phase9-projects-oss/) | 総合プロジェクトと OSS 貢献 | 8週間 |
-| [10](phase10-global-career/) | 英語とグローバルキャリア(コーディング面接・システム設計面接) | 継続 |
-| [11](phase11-ai-era/) | AI 時代のソフトウェア開発 | 2週間+継続 |
+| [10](phase10-global-career/) | 英語とグローバルキャリア(コーディング面接・システム設計面接) | Phase 2から並走 |
+| [11](phase11-ai-era/) | AI 時代のソフトウェア開発 | **Phase 2から並走** |
+
+### 番号順に進まないPhase
+
+Phase 番号は教材の**追加順**であり、学習順ではありません。次の3つは番号どおりに進めないでください。
+
+| Phase | 学習順での位置 | 理由 |
+|---|---|---|
+| [10](phase10-global-career/) 英語 | **Phase 2 から並走** | 語学は最後にまとめて習得できない |
+| [11](phase11-ai-era/) AI活用 | **Phase 2 から並走** | 実際には初日から AI を使う。基礎力の形成期こそ「使い方」が要る |
+| [12](phase12-concurrency-reliability/) 並行処理 | Phase 6 の直後 | API と DB を書けるようになった直後が最適 |
+| [13](phase13-distributed-systems/) 分散システム | Phase 8 の直後 | インフラを触った後、システム設計面接(Phase 10)の前に必要 |
+
+特に Phase 11 を最後に置いてはいけません。基礎力の形成期に AI へ答えを出させると、「動くが説明できない」状態が固定されます。**Phase 2 を終えたら、まず [Lesson 01・02・05](phase11-ai-era/) を読んでください。**
 
 ## 各 Phase の構成
 
@@ -62,7 +76,7 @@ phaseN-<name>/
 
 ## 専門トラック
 
-本編(Phase 0〜11)とは別に、特定分野を深掘りする**独立コース**があります。プログラミングとコマンドラインの基礎があれば、本編の修了を待たずに並行して始められます。
+本編(Phase 0〜13)とは別に、特定分野を深掘りする**独立コース**があります。プログラミングとコマンドラインの基礎があれば、本編の修了を待たずに並行して始められます。
 
 | トラック | 概要 | 対象 | 期間 |
 |---------|------|------|------|
@@ -70,12 +84,20 @@ phaseN-<name>/
 
 ## 学習の進め方
 
-1. Phase 0 から順番に進める。Phase 10 の英語学習は Phase 2 から、Gitの最小セットとPhase横断プロジェクトもPhase 2から並行する
-2. 各レッスンの演習を解いてから解答を見る
-3. Phase 末のチェックリストに加え、[客観的到達度評価](assessment/)のPhaseゲートを満たしてから次へ進む
-4. わからないことは 15 分自力で調べ、それでも解けなければ質問する(質問の仕方も Phase 0 で学ぶ)
+1. Phase 0 から順番に進める。ただし上記の「番号順に進まないPhase」に従う
+2. **Phase 2 を終えたら、次の4つを並走させる** — 英語(Phase 10)、AI活用(Phase 11)、Gitの最小セット(Phase 4)、[Phase横断プロジェクト](longitudinal-project/)
+3. 各レッスンの演習を解いてから解答を見る
+4. Phase 末のチェックリストに加え、[客観的到達度評価](assessment/)のPhaseゲートを満たしてから次へ進む
+5. わからないことは 15 分自力で調べ、それでも解けなければ質問する(質問の仕方も Phase 0 で学ぶ)
 
-Phase 12は追加時の識別番号です。学習順はPhase 6 → Phase 12 → Phase 7を推奨します。
+推奨する学習順:
+
+```
+Phase 0 → 1 → 2 ─┬─────────────────────────────────────────────▶ (以降ずっと並走)
+                 │   Phase 4 Git / Phase 10 英語 / Phase 11 AI活用 / 横断プロジェクト
+                 │
+                 └─ Phase 3 → 5 → 6 → 12 → 7 → 8 → 13 → 9
+```
 
 ## 教材自体の品質確認
 
@@ -83,5 +105,7 @@ Phase 12は追加時の識別番号です。学習順はPhase 6 → Phase 12 →
 
 ```bash
 ruby scripts/validate_curriculum.rb
-python3 -m compileall -q phase2-programming phase3-algorithms phase6-backend-db phase7-software-design phase8-infra-cloud
+python3 -m compileall -q phase2-programming phase3-algorithms phase6-backend-db \
+  phase7-software-design phase8-infra-cloud phase12-concurrency-reliability \
+  phase13-distributed-systems longitudinal-project
 ```

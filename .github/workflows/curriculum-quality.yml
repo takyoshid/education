@@ -18,7 +18,7 @@ jobs:
       - name: Validate internal links and structure
         run: ruby scripts/validate_curriculum.rb
       - name: Compile all Python examples
-        run: python -m compileall -q phase2-programming phase3-algorithms phase6-backend-db phase7-software-design phase8-infra-cloud phase12-concurrency-reliability longitudinal-project
+        run: python -m compileall -q phase2-programming phase3-algorithms phase6-backend-db phase7-software-design phase8-infra-cloud phase12-concurrency-reliability phase13-distributed-systems longitudinal-project
 
   python-projects:
     runs-on: ubuntu-latest

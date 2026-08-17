@@ -31,8 +31,10 @@
 
    ```python
    words = ["cat", "dog", "elephant", "ant", "bee", "python"]
-   # → {3: ["cat", "dog", "bee"], 4: ["ant"], 8: ["elephant"], 6: ["python"]}
+   # → {3: ["cat", "dog", "ant", "bee"], 8: ["elephant"], 6: ["python"]}
    ```
+
+   グループ内の順序は、元のリストに現れた順とせよ。
 
 6. 行列の転置(行と列の入れ替え)を内包表記で実装せよ。
 

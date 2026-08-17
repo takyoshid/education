@@ -6,6 +6,14 @@
 
 正解は一つではありません。面接官は「どのようにトレードオフを考えるか」「規模感をどう捉えるか」を評価しています。
 
+> **⚠️ 前提: このレッスンは「話し方」を扱います**
+>
+> ここで出てくるレプリケーション、シャーディング、CAP、結果整合性、キャッシュ戦略といった概念そのものは、**[Phase 13: 分散システムの基礎](../../phase13-distributed-systems/)** で学びます。
+>
+> このレッスンだけを読んで面接に臨まないでください。用語を並べることはできても、面接官の「なぜそう判断したのですか」「その設計はどんなときに壊れますか」という**掘り下げの質問**に答えられません。システム設計面接で落ちる最も多い理由がこれです。
+>
+> 順序は **Phase 13(仕組みを理解する)→ Phase 10 Lesson 09(英語で説明する練習)** です。
+
 ---
 
 ## 1. システム設計面接の4ステップ
@@ -234,6 +242,8 @@ We can shard by the first character of the short URL code for even distribution.
 ## 3. システム設計面接でよく出るトレードオフ
 
 ### CAP 定理の話し方
+
+> CAP の正確な定義と、よくある誤用(「3つから2つを選ぶ」「CA システム」)については [Phase 13 Lesson 03](../../phase13-distributed-systems/lessons/03-consistency-models.md) を参照してください。面接では PACELC まで触れられると、実際に設計できる人だと伝わります。
 
 ```
 "In distributed systems, we often have to choose between consistency
