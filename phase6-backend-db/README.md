@@ -150,13 +150,15 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # 依存パッケージのインストール
 pip install fastapi uvicorn[standard] sqlalchemy pydantic[email] \
-            python-jose[cryptography] passlib[bcrypt] \
-            httpx pytest pytest-asyncio alembic
+            PyJWT bcrypt python-multipart \
+            httpx pytest alembic
 ```
 
 ---
 
 ## 学習の進め方
+
+プロジェクト後に [Phase 6 実技試験](assessment/)を受験します。CRUDの実装数ではなく、認可、冪等性、競合更新、paginationという本番で壊れやすい境界を評価します。
 
 1. 各レッスンを順番に読む(読むだけでなく、コードを実際に動かす)
 2. レッスン末尾の「確認問題」に自分で答えてみる

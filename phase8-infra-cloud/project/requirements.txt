@@ -1,6 +1,12 @@
-fastapi==0.111.1
-uvicorn[standard]==0.30.1
-sqlalchemy==2.0.31
-psycopg2-binary==2.9.9
-redis==5.0.7
-pydantic==2.7.4
+# バージョン固定は再現性のために行うが、固定したまま放置すると
+# 「新しい Python にホイールが無い」形で必ず腐る。
+# 例: psycopg2-binary 2.9.9 には Python 3.13 用のホイールが無いため、
+# 3.13 環境ではソースビルドに落ちて pg_config が無いと失敗する。
+# CI で複数の Python バージョンを検査して、腐る前に気づくこと。
+
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+redis==5.2.1
+pydantic==2.10.3

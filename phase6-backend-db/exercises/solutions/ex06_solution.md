@@ -96,18 +96,19 @@ raise HTTPException(status_code=500, detail=str(e))
 import logging
 from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from passlib.context import CryptContext
+import bcrypt
 
 app = FastAPI()
 logger = logging.getLogger(__name__)
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @app.post("/users")
 def create_user(email: str, password: str, db: Session):
     try:
         # 修正 1: パスワードを bcrypt でハッシュ化してから保存する
-        hashed_pw = pwd_context.hash(password)
+        hashed_pw = bcrypt.hashpw(
+            password.encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8")
         user = User(email=email, hashed_password=hashed_pw)
         db.add(user)
         db.commit()
@@ -221,7 +222,7 @@ if current_user.id != user_id and current_user.role != "admin":
 
 # test_get_me_with_expired_token
 # → 期限切れトークンで 401 が返ることを確認する。
-#    unittest.mock.patch で datetime.utcnow を過去の時刻に差し替えて期限切れトークンを生成する。
+#    負の expires_delta を渡して「発行時点で期限切れ」のトークンを作る(時計のモックは不要)。
 ```
 
 ### 問題 2-2: タスク API テスト(`tests/test_tasks.py`)

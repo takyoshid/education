@@ -154,6 +154,8 @@ curl --version
 
 ## 参考資料
 
+全レッスンとプロジェクトの後に [Phase 8 実技試験](assessment/)を実施します。未知の障害について、変更前に仮説を立て、安全にrollbackし、証拠付きpostmortemと再発防止へつなげられることを評価します。
+
 - [Docker 公式ドキュメント](https://docs.docker.com/)
 - [GitHub Actions 公式ドキュメント](https://docs.github.com/ja/actions)
 - [AWS 無料利用枠](https://aws.amazon.com/jp/free/)

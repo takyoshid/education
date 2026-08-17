@@ -182,4 +182,4 @@ if __name__ == "__main__":
 
 ---
 
-模範解答: [ex01-solution.md](./solutions/ex01-solution.md)
+模範解答: [sol01.md](./solutions/sol01.md)

@@ -10,7 +10,7 @@ ORM モデル(models.py)とは別に定義する理由:
 
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator
 
 
 # ============================================================
@@ -30,9 +30,24 @@ class UserRegister(BaseModel):
     password: str = Field(
         ...,
         min_length=8,
-        max_length=100,
-        description="パスワード(8 文字以上)",
+        max_length=72,
+        description="パスワード(8 文字以上、UTF-8 で 72 バイト以内)",
     )
+
+    @field_validator("password")
+    @classmethod
+    def password_must_fit_bcrypt(cls, v: str) -> str:
+        """
+        bcrypt は 72 バイトまでしか扱えない(アルゴリズムの仕様)。
+        max_length は「文字数」の検査なので、マルチバイト文字では足りない。
+        日本語 1 文字 = 3 バイトのため、25 文字で 75 バイトになり上限を超える。
+
+        ここで弾かないと、ハッシュ化の時点で 500 エラーになってしまう。
+        入力の検証は、できるだけ入口(境界)で行う。
+        """
+        if len(v.encode("utf-8")) > 72:
+            raise ValueError("パスワードは UTF-8 で 72 バイト以内である必要があります")
+        return v
 
 
 class UserResponse(BaseModel):

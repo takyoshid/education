@@ -142,21 +142,36 @@ FastAPI に CORS ミドルウェアを追加します(spec ファイルのコー
 
 ```python
 # app/core/security.py
-from datetime import datetime, timedelta
-from jose import jwt
-from passlib.context import CryptContext
+from datetime import datetime, timedelta, timezone
+
+import bcrypt
+import jwt  # PyJWT。python-jose は使わない(未メンテ + 既知の CVE)
+
 from app.core.config import settings
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+BCRYPT_MAX_PASSWORD_BYTES = 72  # 文字数ではなくバイト数
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"), hashed_password.encode("utf-8")
+        )
+    except ValueError:
+        return False
+
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    password_bytes = password.encode("utf-8")
+    if len(password_bytes) > BCRYPT_MAX_PASSWORD_BYTES:
+        raise ValueError("パスワードが長すぎます")
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
+
 
 def create_access_token(subject: str) -> str:
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     payload = {"sub": subject, "exp": expire}
     return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 ```
@@ -223,9 +238,9 @@ async def get_user_by_email(db: AsyncSession, email: str):
 
 ```
 [ ] React Router でルーティング設定
-[ ] Axios インスタンスの設定(baseURL, Authorization ヘッダーの自動付与)
+[ ] API クライアントの設定(baseURL, Cookie送信, timeout)
 [ ] ログインフォーム・登録フォームの実装
-[ ] JWT を localStorage に保存し、ページリロードでもログイン状態を維持
+[ ] セッションまたは短命JWTを HttpOnly / Secure / SameSite Cookie で扱う
 [ ] 未ログイン時にルートを保護(Protected Route)
 [ ] コア機能の一覧画面
 [ ] コア機能の作成・編集フォーム
@@ -242,15 +257,8 @@ import axios from "axios"
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL || "http://localhost:8000/api/v1",
-})
-
-// リクエストインターセプター: JWT を自動付与
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token")
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
-  return config
+  withCredentials: true,
+  timeout: 10_000,
 })
 
 // レスポンスインターセプター: 401 でログインページにリダイレクト
@@ -258,7 +266,6 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("access_token")
       window.location.href = "/login"
     }
     return Promise.reject(error)
@@ -267,6 +274,8 @@ api.interceptors.response.use(
 
 export default api
 ```
+
+認証情報をJavaScriptから読める `localStorage` に置くと、XSS時に盗まれます。このキャップストーンではHttpOnly Cookieを標準とし、Cookie認証に必要なCSRF対策も実装・テストしてください。Bearer tokenを選ぶ場合は、保存場所、失効、XSS対策を脅威モデルで説明します。
 
 ### 詰まりやすいポイント
 

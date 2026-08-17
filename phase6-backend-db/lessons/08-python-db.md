@@ -114,7 +114,7 @@ pip install sqlalchemy
 
 ```python
 # models.py
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
     Boolean, Column, DateTime, ForeignKey,
     Integer, String, Text, create_engine
@@ -133,9 +133,14 @@ class User(Base):
     name       = Column(String(100), nullable=False)
     email      = Column(String(255), nullable=False, unique=True)
     hashed_pw  = Column(String(255), nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow,
-                        onupdate=datetime.utcnow)
+    # datetime.utcnow は Python 3.12 で非推奨。
+    # タイムゾーンを持たない datetime は時差バグの温床なので、
+    # UTC であることを型で示す now(timezone.utc) を使う。
+    created_at = Column(DateTime, nullable=False,
+                        default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime, nullable=False,
+                        default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc))
 
     # リレーションシップ
     posts = relationship("Post", back_populates="author",
@@ -153,7 +158,8 @@ class Post(Base):
     title      = Column(String(200), nullable=False)
     body       = Column(Text, nullable=False)
     published  = Column(Boolean, nullable=False, default=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False,
+                        default=lambda: datetime.now(timezone.utc))
 
     author = relationship("User", back_populates="posts")
 ```

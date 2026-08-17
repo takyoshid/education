@@ -4,8 +4,8 @@
 各データ構造の性能を Python 標準ライブラリと比較する。
 
 実行方法:
-  cd /Users/takuyayoshida/education/phase3-algorithms/project
-  python benchmark.py
+  cd phase3-algorithms/project
+  python3 benchmark.py
 """
 
 import time

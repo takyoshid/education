@@ -290,10 +290,10 @@ app.add_middleware(
 
 ### JWT の取り扱い
 
-- アクセストークンはフロントエンドの `localStorage` または `httpOnly Cookie` に保存
-- `localStorage` はシンプルだが XSS に弱い
-- `httpOnly Cookie` は XSS に強いが実装が複雑
-- 初回は `localStorage` で実装し、セキュリティ強化として Cookie に移行するのがよい
+- 標準実装では、セッション識別子または短命アクセストークンを `HttpOnly; Secure; SameSite` Cookie で扱う
+- Cookie認証ではCSRF対策を追加し、認証・認可・CSRFの異常系を自動テストする
+- Bearer tokenを採用する場合、保存場所、XSS、失効、refresh token rotationの設計を脅威モデルに記録する
+- `localStorage` への長命トークン保存を「簡単だから」という理由だけで選ばない
 
 ### PostgreSQL の ENUM 型のマイグレーション
 

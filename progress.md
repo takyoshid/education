@@ -21,6 +21,7 @@
 | 9 | phase9-projects-oss | Sonnet | ✅ 完了(17ファイル) |
 | 10 | phase10-global-career | Sonnet | ✅ 完了(24ファイル) |
 | 11 | phase11-ai-era | Sonnet | ✅ 完了(18ファイル) |
+| 12 | phase12-concurrency-reliability | Codex | ✅ 追加(並行処理・信頼性、障害注入演習、実技試験) |
 | - | 最終レビュー・検収 | Opus | ✅ 完了 |
 
 ## 実行計画
@@ -43,10 +44,11 @@
 - 2026-07-06: 最終レビュー完了。全 Phase の README/lessons/exercises/solutions の存在を確認、内容の抜き取り検査で品質基準(日英併記・図解・思考プロセス解説)への適合を確認、ルート README に各 Phase へのリンクを追加
 - 2026-07-13: やる気を高める・美しいエピソードを追加。ルート+全12 Phase の README に「🌟 旅の始まりに」セクション(エイダ・ラブレス、ジョブズの点と点、ホッパーの1ナノ秒、Hello World の儀式、ブラックホール撮影、岩田聡、This is for everyone、SQLite の祝福、クヌースの小切手、Y2K の見えない勝利、カーマックのピザ、キャサリン・ジョンソン、AlphaGo 37手目/78手目)。さらに8レッスンに「🌟 コラム」を追加(手織りのコアロープメモリ、500マイルメール、MoMA の絵文字、火星バッジ、ボイジャー1号の遠隔修理、Minecraft、伊能忠敬、ケンタウロス・チェス)
 - 2026-07-11: 全 110 レッスンに「💡 コラム」を1本ずつ追加(まとめセクション直前)。各レッスンのテーマに対応する実話エピソード(アポロ11号、left-pad 事件、Knight Capital、GitLab 障害、Equifax 等)または例え話(JWT=ホテルのカードキー、依存性逆転=コンセント規格、テストピラミッド=健康診断 等)を書き下ろし。Phase 間の相互参照(例: git bisect→二分探索、TypeScript→アリアン5)も織り込み済み
+- 2026-08-17: 実効性改善。Phase 2・3・5〜8・11に客観実技試験とstarter/公開testを追加。Phase横断Learning Hub starterを追加。Phase 12「並行処理と信頼性」を新設。Phase 11をprovider非依存、offline fake、eval、prompt injection、最小権限中心へ改訂。教材構造CIを更新。
 
 ## 完了サマリー
 
 - 全 12 Phase、計 300 ファイル超の教材一式が完成
-- 各 Phase: README(学習目標・修了条件)+ レッスン + 3段階難易度の演習 + 解説付き模範解答 + 総仕上げプロジェクト
+- 各 Phase: README(学習目標・修了条件)+ レッスン + 段階別の演習 + 模範解答 + 総仕上げプロジェクト
 - 実行可能な成果物: 家計簿 CLI(Py)、データ構造ライブラリ、天気アプリ(Vanilla→React)、認証付き Todo API(FastAPI)、レガシーリファクタ課題、Docker/CI/デプロイ課題、キャップストーン仕様 3 案
 - 世界対応: 英語用語併記、英文レジュメ/LinkedIn/カバーレターのテンプレート、英語面接対策(コーディング/行動/システム設計)、OSS 英語例文集

@@ -1,11 +1,29 @@
+# 依存はすべて明示的に固定する。
+# 「直接 import しているのに書かれていない」依存があると、
+# たまたま他のパッケージ経由で入っていた環境では動き、
+# クリーンな環境では動かない、という最悪のバグになる。
+# 固定したバージョンが古びていないかは CI が検知する。
+
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
+
+# OAuth2PasswordRequestForm(multipart/form-data)の解析に必須。
+# これが無いと import 時点で RuntimeError になる。
+python-multipart==0.0.20
+
 sqlalchemy==2.0.36
 pydantic[email]==2.10.3
 pydantic-settings==2.7.0
-python-jose[cryptography]==3.3.0
-passlib[bcrypt]==1.7.4
+
+# JWT。python-jose ではなく PyJWT を使う。
+# python-jose は事実上メンテナンスが止まっており、
+# 3.3.0 にはアルゴリズム混同(CVE-2024-33663)と
+# JWT bomb による DoS(CVE-2024-33664)がある。
+PyJWT==2.10.1
+
+# パスワードハッシュ化。passlib は 2020 年以降更新が止まっており、
+# bcrypt 4.1 以降と組み合わせると実行時に壊れるため使わない。
+bcrypt==5.0.0
+
 httpx==0.28.1
 pytest==8.3.4
-pytest-anyio==0.0.0
-anyio[trio]==4.7.0

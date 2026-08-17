@@ -5,7 +5,7 @@ Exercise 04 解答: FastAPI CRUD API
 テスト(tests/conftest.py, tests/test_tasks.py)を 1 ファイルにまとめた参考実装です。
 
 【実際に動かす場合】
-  pip install fastapi uvicorn[standard] sqlalchemy pydantic[email] httpx pytest pytest-anyio
+  pip install fastapi uvicorn[standard] sqlalchemy pydantic[email] httpx pytest
 
   uvicorn ex04_solution:app --reload
   → http://localhost:8000/docs で Swagger UI を確認できます。
@@ -45,7 +45,7 @@ def get_db():
 # ============================================================
 # models.py 相当: SQLAlchemy ORM モデル
 # ============================================================
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import String, Integer, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -60,7 +60,7 @@ class Task(Base):
     # priority: 1=低 / 2=中 / 3=高
     priority: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.utcnow
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
 
@@ -253,6 +253,32 @@ def get_task(task_id: int, db: Session = Depends(get_db)) -> Task:
 # 問題 2-4: タスク更新
 # -------------------------------------------------------
 @app.patch(
+    "/tasks/bulk-done",
+    summary="複数タスクを一括で完了にする",
+)
+def bulk_done(request: BulkDoneRequest, db: Session = Depends(get_db)) -> dict:
+    """
+    リクエストボディの task_ids に含まれるタスクをすべて done=True にする。
+    存在しない ID は無視して、更新できた件数を返す。
+
+    curl 確認例:
+        curl -X PATCH http://localhost:8000/tasks/bulk-done \\
+          -H "Content-Type: application/json" \\
+          -d '{"task_ids": [1, 2, 3]}'
+    """
+    # 注意: bulk-done は task_id のパスパラメーターより前に定義する必要がある。
+    # FastAPI はルートを定義順に評価するため、/tasks/{task_id} が先にあると
+    # "bulk-done" が task_id として解釈されてしまう。
+    updated = (
+        db.query(Task)
+        .filter(Task.id.in_(request.task_ids))
+        .update({Task.done: True}, synchronize_session="fetch")
+    )
+    db.commit()
+    return {"updated_count": updated}
+
+
+@app.patch(
     "/tasks/{task_id}",
     response_model=TaskResponse,
     summary="タスクを部分更新する",
@@ -313,30 +339,6 @@ def delete_task(task_id: int, db: Session = Depends(get_db)) -> None:
 # -------------------------------------------------------
 # 問題 3-1: バルク完了
 # -------------------------------------------------------
-@app.patch(
-    "/tasks/bulk-done",
-    summary="複数タスクを一括で完了にする",
-)
-def bulk_done(request: BulkDoneRequest, db: Session = Depends(get_db)) -> dict:
-    """
-    リクエストボディの task_ids に含まれるタスクをすべて done=True にする。
-    存在しない ID は無視して、更新できた件数を返す。
-
-    curl 確認例:
-        curl -X PATCH http://localhost:8000/tasks/bulk-done \\
-          -H "Content-Type: application/json" \\
-          -d '{"task_ids": [1, 2, 3]}'
-    """
-    # 注意: bulk-done は task_id のパスパラメーターより前に定義する必要がある。
-    # FastAPI はルートを定義順に評価するため、/tasks/{task_id} が先にあると
-    # "bulk-done" が task_id として解釈されてしまう。
-    updated = (
-        db.query(Task)
-        .filter(Task.id.in_(request.task_ids))
-        .update({Task.done: True}, synchronize_session="fetch")
-    )
-    db.commit()
-    return {"updated_count": updated}
 
 
 # ============================================================
@@ -348,6 +350,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine as _create_engine
 from sqlalchemy.orm import sessionmaker as _sessionmaker
+from sqlalchemy.pool import StaticPool
 
 
 # -------------------------------------------------------
@@ -355,9 +358,14 @@ from sqlalchemy.orm import sessionmaker as _sessionmaker
 # -------------------------------------------------------
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
+# poolclass=StaticPool は必須。
+# SQLite のインメモリ DB は接続ごとに別 DB が作られるため、
+# 既定のプールのままだとテーブルを作った接続とリクエスト側の接続が別物になり
+# "no such table" で落ちる。StaticPool は 1 本の接続を使い回す。
 test_engine = _create_engine(
     TEST_DATABASE_URL,
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = _sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
 

@@ -11,7 +11,7 @@
 ## 準備
 
 ```bash
-pip install python-jose[cryptography] passlib[bcrypt]
+pip install PyJWT bcrypt python-multipart
 ```
 
 Exercise 04 の実装をベースとして使います。なければ `exercises/solutions/ex04_solution.py` をコピーして始めてください。

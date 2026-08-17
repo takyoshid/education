@@ -15,6 +15,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.database import Base, get_db
 from app.main import app
@@ -27,9 +28,15 @@ from app.main import app
 # 本番 DB には一切影響しない。
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
+# poolclass=StaticPool は必須。
+# SQLite のインメモリ DB は「接続ごとに別の DB」が作られる仕様のため、
+# 既定のプールのままだと create_all() でテーブルを作った接続と、
+# リクエスト処理が使う接続が別物になり "no such table: users" で落ちる。
+# StaticPool は 1 本の接続を使い回すので、全員が同じインメモリ DB を見る。
 test_engine = create_engine(
     TEST_DATABASE_URL,
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(
     autocommit=False,

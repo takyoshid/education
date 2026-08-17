@@ -192,4 +192,4 @@ TIMEZONE = "Asia/Tokyo"
 
 ---
 
-模範解答: [ex03-solution.md](./solutions/ex03-solution.md)
+模範解答: [sol03.md](./solutions/sol03.md)

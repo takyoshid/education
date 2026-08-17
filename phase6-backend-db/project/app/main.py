@@ -14,6 +14,7 @@ main.py: FastAPI アプリケーションのエントリーポイント
 
 import logging
 import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exception_handlers import http_exception_handler
@@ -47,7 +48,27 @@ Base.metadata.create_all(bind=engine)
 # FastAPI アプリケーション
 # ============================================================
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    アプリの起動時・終了時の処理をまとめる(lifespan)。
+
+    yield の前が起動処理、後が終了処理。
+    以前は @app.on_event("startup") / ("shutdown") を使っていたが、
+    現在は非推奨。lifespan なら「起動時に確保した資源を終了時に解放する」
+    という対応関係が 1 か所に書けるため、解放漏れが起きにくい。
+    """
+    logger.info(
+        "アプリケーション起動 (environment=%s, log_level=%s)",
+        settings.environment,
+        settings.log_level,
+    )
+    yield
+    logger.info("アプリケーション終了")
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="Todo REST API",
     description=(
         "Phase 6 総仕上げプロジェクト。\n\n"
@@ -116,24 +137,6 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
         exc_info=exc,
     )
     return Response(content='{"detail":"Internal Server Error"}', status_code=500)
-
-
-# ============================================================
-# ライフサイクルイベント
-# ============================================================
-
-@app.on_event("startup")
-async def on_startup() -> None:
-    logger.info(
-        "アプリケーション起動 (environment=%s, log_level=%s)",
-        settings.environment,
-        settings.log_level,
-    )
-
-
-@app.on_event("shutdown")
-async def on_shutdown() -> None:
-    logger.info("アプリケーション終了")
 
 
 # ============================================================

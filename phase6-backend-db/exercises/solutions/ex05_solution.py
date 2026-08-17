@@ -6,7 +6,7 @@ Exercise 04 の CRUD API に認証(Authentication)と認可(Authorization)を追
 
 【起動方法】
   pip install fastapi uvicorn[standard] sqlalchemy pydantic[email] \\
-              python-jose[cryptography] passlib[bcrypt] httpx pytest
+              PyJWT bcrypt python-multipart httpx pytest
 
   uvicorn ex05_solution:app --reload
   → http://localhost:8000/docs で Swagger UI を確認できます。
@@ -47,7 +47,7 @@ def get_db():
 # ============================================================
 # models.py 相当: SQLAlchemy ORM モデル
 # ============================================================
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -60,7 +60,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.utcnow
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
 
     # リレーション: このユーザーが所有するタスクの一覧
@@ -76,7 +76,7 @@ class Task(Base):
     done: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     priority: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, default=datetime.utcnow
+        DateTime, nullable=False, default=lambda: datetime.now(timezone.utc)
     )
     # 所有者の外部キー
     owner_id: Mapped[int] = mapped_column(
@@ -95,9 +95,9 @@ Base.metadata.create_all(bind=engine)
 from datetime import timedelta
 from typing import Optional
 
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+import bcrypt
+import jwt
+from fastapi import Depends, HTTPException, Query, status
 from fastapi.security import OAuth2PasswordBearer
 
 # 本番環境では必ず環境変数から読み込む
@@ -105,18 +105,27 @@ SECRET_KEY = "dev-secret-key-change-in-production"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt は 72 バイトまで(文字数ではなくバイト数)
+BCRYPT_MAX_PASSWORD_BYTES = 72
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def hash_password(plain_password: str) -> str:
-    """平文パスワードを bcrypt でハッシュ化して返す"""
-    return pwd_context.hash(plain_password)
+    """平文パスワードを bcrypt でハッシュ化して返す(毎回ランダムなソルト付き)"""
+    password_bytes = plain_password.encode("utf-8")
+    if len(password_bytes) > BCRYPT_MAX_PASSWORD_BYTES:
+        raise ValueError("パスワードが長すぎます")
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """平文とハッシュを照合する。一致すれば True"""
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"), hashed_password.encode("utf-8")
+        )
+    except ValueError:
+        return False
 
 
 def create_access_token(
@@ -124,7 +133,7 @@ def create_access_token(
 ) -> str:
     """JWT アクセストークンを発行する"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + (
+    expire = datetime.now(timezone.utc) + (
         expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     to_encode.update({"exp": expire})
@@ -136,7 +145,7 @@ def decode_access_token(token: str) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="認証トークンが無効または期限切れです",
@@ -376,9 +385,12 @@ def create_task(
 )
 def get_tasks(
     done: bool | None = None,
-    priority: int | None = Field(None, ge=1, le=3),
-    limit: int = Field(20, ge=1, le=100),
-    offset: int = Field(0, ge=0),
+    # クエリパラメータの制約は Field ではなく Query で書く。
+    # Field は Pydantic モデルのフィールド用で、
+    # FastAPI のパラメータに使うと起動時に AssertionError になる。
+    priority: int | None = Query(None, ge=1, le=3),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[Task]:
@@ -496,13 +508,19 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine as _create_engine
 from sqlalchemy.orm import sessionmaker as _sessionmaker
-from unittest.mock import patch
+from sqlalchemy.pool import StaticPool
 
 
 TEST_DATABASE_URL = "sqlite:///:memory:"
 
+# poolclass=StaticPool は必須。
+# SQLite のインメモリ DB は接続ごとに別 DB が作られるため、
+# 既定のプールのままだと create_all() した接続とリクエスト側の接続が別物になり
+# "no such table: users" で落ちる。StaticPool は 1 本の接続を使い回す。
 test_engine = _create_engine(
-    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
+    TEST_DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = _sessionmaker(
     autocommit=False, autoflush=False, bind=test_engine
@@ -653,17 +671,13 @@ class TestGetMe:
 
     def test_get_me_with_expired_token(self, client):
         """期限切れトークンでは 401 が返る"""
-        past_time = datetime.utcnow() - timedelta(hours=2)
-
-        # datetime.utcnow をモックして過去の時刻を返させることで期限切れトークンを作成
-        # jose ライブラリが exp クレームを検証して JWTError を raise するため 401 になる
-        with patch("ex05_solution.datetime") as mock_dt:
-            mock_dt.utcnow.return_value = past_time
-            # timedelta は実際のものを使う
-            token = create_access_token(
-                data={"sub": "1"},
-                expires_delta=timedelta(minutes=30),
-            )
+        # 時計をモックせず、負の expires_delta で「発行時点で期限切れ」を作る。
+        # モックは実装の内部構造に依存するが、この書き方は公開 API だけに依存する。
+        # PyJWT が exp クレームを検証して ExpiredSignatureError を raise するため 401 になる
+        token = create_access_token(
+            data={"sub": "1"},
+            expires_delta=timedelta(minutes=-30),
+        )
 
         resp = client.get("/users/me", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 401

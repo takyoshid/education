@@ -10,7 +10,7 @@ config.py: pydantic-settings を使った設定管理
 """
 
 from functools import lru_cache
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -32,11 +32,13 @@ class Settings(BaseSettings):
     # ログレベル
     log_level: str = "INFO"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    # Pydantic v2 では入れ子の class Config ではなく model_config を使う
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
         # SECRET_KEY / secret_key どちらの環境変数でも受け付ける
-        case_sensitive = False
+        case_sensitive=False,
+    )
 
 
 @lru_cache

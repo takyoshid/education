@@ -557,4 +557,4 @@ const user2: Readonly<{ name: string }> = { name: "Alice" };
 
 ---
 
-次のレッスン: [10-react-intro.md](10-react-intro.md)
+次のレッスン: [10-react-basics.md](10-react-basics.md)

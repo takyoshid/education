@@ -10,6 +10,8 @@
 
 ## 1. 主要な AI コーディングアシスタント
 
+以下は製品例であり、特定製品の採用を推奨する一覧ではありません。名称、model、料金、data policy、権限は変化するため、選定時は公式情報を比較します。評価軸は、補完品質、repository理解、tool権限、data retention、audit、model選択、cost、組織policyです。
+
 現在、エンジニアが実務で使う AI コーディングアシスタントは主に以下があります。
 
 ### GitHub Copilot
@@ -141,6 +143,8 @@ API キー・パスワード・顧客データ・社内の機密コードなど�
 ---
 
 ## 6. Claude Code の基本的な使い方
+
+この節はCLI型agentの具体例です。他のagentを使う場合も、workspaceをGit管理し、権限を最小化し、差分と実行結果を確認する原則は同じです。install commandや操作方法は変更されるため、実行前に公式documentを確認してください。
 
 Claude Code はターミナルから使います。
 

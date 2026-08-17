@@ -190,4 +190,4 @@ def show_history():
 
 ---
 
-模範解答: [ex02-solution.md](./solutions/ex02-solution.md)
+模範解答: [sol02.md](./solutions/sol02.md)

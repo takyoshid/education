@@ -286,4 +286,4 @@ git log --oneline  # コミットが戻ってきた
 
 ---
 
-模範解答: [ex05-solution.md](./solutions/ex05-solution.md)
+模範解答: [sol05.md](./solutions/sol05.md)

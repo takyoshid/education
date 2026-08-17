@@ -29,7 +29,7 @@
 
 ## 前提知識
 
-**Phase 3 修了**が必須です。具体的には以下を習得済みであることを前提とします。
+**Phase 2 修了後から開始できます。** Phase 3 を待つ必要はありません。なお、Phase 2 では下記の「Git 最小セット」を先に使い始め、ここでは内部モデル・ブランチ・共同作業・復旧まで深めます。
 
 - ターミナル(シェル)の基本操作(cd, ls, mkdir, cat など)
 - テキストファイルの作成・編集
@@ -70,14 +70,33 @@ phase4-dev-tools/
 │   ├── ex04-github-pr.md        # 演習4: GitHub Pull Request
 │   ├── ex05-undo.md             # 演習5: やり直し操作
 │   └── solutions/
-│       ├── ex01-solution.md
-│       ├── ex02-solution.md
-│       ├── ex03-solution.md
-│       ├── ex04-solution.md
-│       └── ex05-solution.md
+│       ├── sol01.md
+│       ├── sol02.md
+│       ├── sol03.md
+│       ├── sol04.md
+│       └── sol05.md
 └── project/
     └── team-sim-project.md      # 総仕上げ: 擬似チーム開発フロー
 ```
+
+> 注: 解答ファイルの実名は `sol01.md`〜`sol05.md` です。
+
+## Phase 2 から使う Git 最小セット
+
+Phase 2 の各演習・プロジェクトでは、詳細を学ぶ前でも次だけは実行してください。
+
+```bash
+git init
+git status
+git add <変更したファイル>
+git commit -m "feat: describe the change"
+git log --oneline
+```
+
+- 1つの意味ある変更を1コミットにする
+- 秘密情報や仮想環境をコミットしない
+- 動作確認してからコミットする
+- Phase 4開始時に、それまでの履歴を教材として読み返す
 
 ---
 

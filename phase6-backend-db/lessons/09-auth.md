@@ -36,35 +36,76 @@ DB が漏洩した場合、全ユーザーのパスワードがそのまま流�
 **ハッシュ関数(Hash Function)** は、任意の入力から固定長の出力(ハッシュ値)を生成します。
 
 ```
-"password123" → bcrypt → "$2b$12$..."(60文字の文字列)
+"password123" → SHA-256 → "ef92b778bafe771e89245b89ecbc..."
 
-特性:
+素のハッシュ関数の特性:
 - 一方向: ハッシュ値から元のパスワードに戻せない
 - 同じ入力 → 同じ出力
 - 微妙に異なる入力 → 全く異なる出力
 ```
 
+しかし、パスワード保存に素のハッシュ関数を使ってはいけません。理由は2つあり、それぞれ別の対策が必要です。
+
+### 問題1: 「同じ入力 → 同じ出力」が弱点になる → ソルト(salt)
+
+素のハッシュは決定的なので、攻撃者はあらかじめ「よくあるパスワード → ハッシュ値」の巨大な対応表を作っておけます。これが**レインボーテーブル攻撃(rainbow table attack)** です。DB が漏洩したら、表を引くだけで元のパスワードが判明します。
+
+さらに、同じハッシュ値が並んでいれば「この2人は同じパスワードを使っている」ことまで漏れます。
+
+対策が **ソルト(salt)** です。パスワードごとに**ランダムな文字列**を生成して混ぜてからハッシュ化します。
+
+```
+"password123" + ソルト "x7Kp2m..." → ハッシュA
+"password123" + ソルト "9Qw4tz..." → ハッシュB   ← 同じパスワードでも別の値
+```
+
+ソルトは秘密情報ではなく、ハッシュ値と一緒に保存します。攻撃者はユーザーごとに表を作り直す必要が生じ、事前計算が無意味になります。
+
+### 問題2: 速すぎる → ストレッチング(work factor)
+
+MD5 や SHA-256 は「高速であること」を目的に設計されています。GPU を使えば1秒間に数十億回計算できるため、ソルトがあっても**総当たり攻撃(brute-force attack)** で短いパスワードは破られます。
+
+対策は、意図的に計算を重くすることです。bcrypt の**コストパラメーター(work factor)** は、この重さを指定します。コスト12なら約 2^12 回の内部繰り返しが走ります。正規のログインは1回だけなので0.3秒かかっても構いませんが、攻撃者の総当たりは非現実的な時間になります。
+
+> **重要**: レインボーテーブルへの対策は**ソルト**、総当たりへの対策は**低速化**です。別々の問題に別々の対策が要る、と整理して覚えてください。
+
 ### bcrypt を使った実装
 
+bcrypt は上の2つを**両方まとめて**やってくれます。
+
 ```bash
-pip install passlib[bcrypt]
+pip install bcrypt
 ```
 
 ```python
-from passlib.context import CryptContext
+import bcrypt
 
-# bcrypt コンテキストの設定
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# bcrypt は 72 バイトまでしか扱えない(アルゴリズムの仕様)。
+# 「文字数」ではなく「UTF-8 のバイト数」。日本語は 1 文字 3 バイト。
+BCRYPT_MAX_PASSWORD_BYTES = 72
 
 
 def hash_password(plain_password: str) -> str:
     """パスワードをハッシュ化する"""
-    return pwd_context.hash(plain_password)
+    password_bytes = plain_password.encode("utf-8")
+    if len(password_bytes) > BCRYPT_MAX_PASSWORD_BYTES:
+        # 黙って切り詰めてはいけない。73 バイト目以降が無視される結果、
+        # 「先頭 72 バイトが同じ別のパスワード」でログインできてしまう。
+        raise ValueError("パスワードが長すぎます")
+    # gensalt() がランダムなソルトとコスト(既定 12)を生成する
+    return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """平文パスワードとハッシュ値を照合する"""
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(
+            plain_password.encode("utf-8"),
+            hashed_password.encode("utf-8"),
+        )
+    except ValueError:
+        # ハッシュ値が壊れている場合。500 ではなく認証失敗として扱う
+        return False
 
 
 # 使用例
@@ -72,15 +113,32 @@ hashed = hash_password("mypassword123")
 print(hashed)
 # "$2b$12$KkjgXRVq8..." (bcrypt ハッシュ)
 
+# 同じパスワードでも、呼ぶたびに違うハッシュ値になる(ソルトがランダムだから)
+print(hash_password("mypassword123") != hash_password("mypassword123"))  # True
+
 print(verify_password("mypassword123", hashed))   # True
 print(verify_password("wrongpassword", hashed))   # False
 ```
 
-### なぜ bcrypt か
+**「毎回違う値になるのに、なぜ照合できるのか?」** — これが最初の関門です。答えは、ソルトがハッシュ文字列そのものに埋め込まれているからです。
 
-MD5 や SHA-256 はパスワードのハッシュには**不適切**です。処理が速すぎて、辞書攻撃(レインボーテーブル攻撃)に弱いからです。
+```
+$2b$12$KkjgXRVq8abcdefghijklmO1p2q3r4s5t6u7v8w9x0y1z2A3B4C
+└┬┘ └┬┘ └──────┬──────┘└──────────────┬──────────────┘
+ │   │         │                      │
+ │   │         └ ソルト(22文字)        └ ハッシュ値(31文字)
+ │   └ コスト(work factor = 12)
+ └ アルゴリズム識別子(bcrypt)
+```
 
-bcrypt は意図的に処理を重くしており、コストパラメーター(work factor)で難易度を調整できます。現代では bcrypt, scrypt, Argon2 が推奨されます。
+`checkpw()` は、渡されたハッシュ値からソルトとコストを読み取り、同じ条件で入力を計算し直して比較します。だから照合できます。
+
+### 使ってはいけないライブラリ
+
+- **`passlib`**: 多くの古い記事が `passlib` を薦めていますが、2020年以降メンテナンスが止まっており、`bcrypt` 4.1 以降と組み合わせると実行時にエラーになります。新規のコードでは使わないでください。
+- **`hashlib.md5` / `hashlib.sha256` を直接**: 上で説明した理由により論外です。
+
+現代の推奨は **Argon2id**(新規ならこれが第一候補)または **bcrypt**(実績重視)です。scrypt も可です。
 
 ---
 
@@ -144,7 +202,7 @@ payload = {
 JWT の認証フロー:
 
 1. ログイン → サーバーが JWT を発行 → クライアントに返す
-2. クライアントが JWT を保存(localStorage またはメモリ)
+2. クライアントが JWT を保存(保存場所は下記の注意を参照)
 3. 以降のリクエスト:
    Authorization: Bearer eyJhbG...
 4. サーバーが署名を検証
@@ -157,43 +215,56 @@ JWT の認証フロー:
 | スケールアウトが容易 | トークンを盗まれると有効期限まで悪用される |
 | スマホアプリでの利用が簡単 | ペイロードは誰でも読める(暗号化ではない) |
 
+### ⚠️ トークンをどこに保存するか
+
+多くの入門記事が `localStorage` を薦めますが、**Web アプリでは既定の選択肢にしないでください。**
+
+`localStorage` は JavaScript から自由に読めます。つまりサイトのどこか1か所にでも XSS(クロスサイトスクリプティング)があれば、`localStorage.getItem("token")` の一行でトークンを盗まれます。読み込んでいる外部スクリプト(広告、解析ツール、npm の依存パッケージ)からも読めます。
+
+| 保存場所 | XSS で盗まれるか | 備考 |
+|---|---|---|
+| `localStorage` | **盗まれる** | 既定にしない |
+| メモリ(JS変数) | 盗まれる(ただしタブを閉じれば消える) | SPA で短命なトークン向け |
+| **HttpOnly Cookie** | **読めない** | Web では第一候補。ただし CSRF 対策が必須 |
+
+**Web アプリの既定は `HttpOnly; Secure; SameSite=Lax` の Cookie** です。JavaScript から読めないため XSS で盗めません。代わりに Cookie は自動送信されるので、**CSRF(クロスサイトリクエストフォージェリ)対策**が必要になります(Lesson 10 で扱います)。
+
+`Authorization: Bearer` ヘッダー方式が適するのは、Cookie の自動送信が効かないスマホアプリや、別ドメインの API を叩く場合です。**「どちらが安全か」ではなく「どの攻撃を引き受けるか」の選択**だと理解してください。XSS を引き受けるか、CSRF を引き受けるか、です。
+
 ---
 
 ## 4. JWT の実装
 
 ```bash
-pip install python-jose[cryptography]
+pip install PyJWT
 ```
+
+> **ライブラリ選択の注意**: 日本語の記事の多くは `python-jose` を使っています。しかしこのライブラリは事実上メンテナンスが停止しており、3.3.0 には**アルゴリズム混同(CVE-2024-33663)** と **JWT bomb による DoS(CVE-2024-33664)** があります。認証コードは「枯れているか」ではなく「**今も直され続けているか**」で選んでください。現在の標準は `PyJWT` です。
 
 ```python
 # auth.py
-from datetime import datetime, timedelta
+import os
+from datetime import datetime, timedelta, timezone
 from typing import Optional
-from jose import JWTError, jwt
-from passlib.context import CryptContext
+
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-# 設定(本番環境では環境変数から読む)
-SECRET_KEY = "your-secret-key-change-this-in-production"
+# 設定(SECRET_KEY は必ず環境変数から読む。コードに書かない)
+SECRET_KEY = os.environ["SECRET_KEY"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-
-def hash_password(plain_password: str) -> str:
-    return pwd_context.hash(plain_password)
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    # datetime.utcnow() は Python 3.12 で非推奨。
+    # タイムゾーンを持たない datetime は「9時間ずれた有効期限」のような
+    # 検知しにくいバグの原因になるため、UTC であることを型で示す。
+    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=15))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -201,9 +272,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 def decode_token(token: str) -> dict:
     """トークンをデコードして payload を返す。無効なら例外を raise"""
     try:
+        # algorithms は必ず明示する。省略したり、トークン側の alg を
+        # そのまま信用すると、alg=none や HS256/RS256 の混同によって
+        # 署名検証を回避される(アルゴリズム混同攻撃)。
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-    except JWTError:
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="認証トークンが無効です",
@@ -372,9 +446,13 @@ OAuth 2.0 はあくまで**認可**のプロトコルです。認証には **Ope
 
 ## まとめ
 
-- パスワードは必ず bcrypt 等でハッシュ化してから DB に保存する
+- パスワードは必ず bcrypt / Argon2id 等でハッシュ化してから DB に保存する
+- **ソルト**はレインボーテーブル対策、**低速化(work factor)** は総当たり対策。別々の問題に別々の対策
+- bcrypt は同じパスワードでも毎回違うハッシュを返す。ソルトがハッシュ文字列に埋め込まれているので照合できる
+- `passlib` と `python-jose` は使わない。`bcrypt` と `PyJWT` を使う
 - セッション認証はサーバーで状態を管理し、JWT はトークン自体に情報を持つ
 - JWT の署名は秘密鍵でのみ生成できるが、ペイロードは誰でも読める
+- Web でのトークン保存は HttpOnly Cookie が既定。`localStorage` は XSS で盗まれる
 - アクセストークンの有効期限は短く設定し、リフレッシュトークンと組み合わせる
 - OAuth 2.0 は「Google でログイン」などの権限委譲の仕組み
 
@@ -382,10 +460,14 @@ OAuth 2.0 はあくまで**認可**のプロトコルです。認証には **Ope
 
 ## 確認問題
 
-1. MD5 ハッシュでパスワードを保存してはいけない理由を説明してください。
-2. JWT のペイロードに機密情報(クレジットカード番号など)を含めても良いですか？理由も答えてください。
-3. JWT のアクセストークンの有効期限を 1 年に設定した場合、どのようなセキュリティ上の問題が起きますか？
-4. セッション認証が JWT に比べて有利な点を 1 つ答えてください。
+1. MD5 ハッシュでパスワードを保存してはいけない理由を、**2つ**挙げて説明してください。それぞれに対応する対策の名前も答えてください。
+2. `hash_password("abc")` を2回呼ぶと違う値が返ります。それにもかかわらず `verify_password` が正しく動くのはなぜですか。
+3. ソルトは秘密情報ではなく、ハッシュ値と一緒に平文で保存します。それでも安全なのはなぜですか。
+4. JWT のペイロードに機密情報(クレジットカード番号など)を含めても良いですか？理由も答えてください。
+5. JWT のアクセストークンの有効期限を 1 年に設定した場合、どのようなセキュリティ上の問題が起きますか？
+6. セッション認証が JWT に比べて有利な点を 1 つ答えてください。
+7. トークンを `localStorage` に保存した場合と HttpOnly Cookie に保存した場合で、それぞれどの攻撃を引き受けることになりますか。
+8. パスワードの入力欄に `max_length=100`(文字数)だけを設定した場合、bcrypt でどんな不具合が起きうるか説明してください。
 
 ---
 

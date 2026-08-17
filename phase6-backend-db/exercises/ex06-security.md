@@ -104,20 +104,21 @@ Exercise 05 で実装した認証付き Task API に対してテストを書い�
 # test_get_me_with_expired_token     期限切れトークンで 401
 ```
 
-**ヒント:** 期限切れトークンのテストには `unittest.mock.patch` で `datetime.utcnow()` を過去の時刻に差し替える方法が使えます。
+**ヒント:** 期限切れトークンは、時計をモックしなくても作れます。負の `expires_delta` を渡せば「発行時点で既に期限切れ」のトークンになります。
 
 ```python
-from unittest.mock import patch
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 def test_get_me_with_expired_token(client):
-    # 1時間前に発行されたトークンを作る
-    past_time = datetime.utcnow() - timedelta(hours=1)
-    with patch("app.auth.datetime") as mock_dt:
-        mock_dt.utcnow.return_value = past_time
-        # トークンを発行...
-    # → トークンは期限切れになっている
+    # 30分前に期限切れになったトークンを作る
+    token = create_access_token(
+        data={"sub": "1"},
+        expires_delta=timedelta(minutes=-30),
+    )
+    # → PyJWT が exp クレームを検証して 401 になる
 ```
+
+モックを使う方法もありますが、`patch("app.auth.datetime")` は「実装が datetime をどう呼んでいるか」に依存します。実装をリファクタするとテストが壊れるため、**公開インターフェースだけで書ける方法があるならそちらを選びます**。
 
 ### 問題 2-2: タスク API テスト
 

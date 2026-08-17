@@ -239,10 +239,10 @@ SECRET_KEY=your-secret-key
 ```
 
 ## 開発への参加(Contributing)
-[CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
+`CONTRIBUTING.md` を参照してください。
 
 ## ライセンス(License)
-[MIT License](LICENSE)
+`LICENSE` を参照してください。
 ```
 
 ### README を書く際のポイント

@@ -4,7 +4,8 @@ FastAPI + PostgreSQL + Redis による RESTful API の実装例
 """
 
 import os
-from datetime import datetime
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 
 import redis
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -44,11 +45,26 @@ class Task(Base):
     title = Column(String(200), nullable=False)
     description = Column(String(1000), nullable=True)
     done = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-# テーブルを作成する（起動時に実行）
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    起動時にテーブルを作成する。
+
+    重要: この処理をモジュールの一番外側(import 時)に書いてはいけない。
+    import しただけで DB へ接続しにいくため、
+      - DB が無い環境ではテストが collect すら通らない
+      - コンテナが DB より先に起動すると即クラッシュする
+      - CI で DB サービスを立てないと何も検査できない
+    という形で必ず詰まる。「副作用は import 時ではなく起動時に」。
+
+    なお本番運用ではテーブル作成に create_all ではなく
+    Alembic などのマイグレーションツールを使う(Lesson 05 参照)。
+    """
+    Base.metadata.create_all(bind=engine)
+    yield
 
 
 # ============================================================
@@ -82,6 +98,7 @@ class TaskResponse(BaseModel):
 # ============================================================
 
 app = FastAPI(
+    lifespan=lifespan,
     title="タスク管理 API",
     description="Phase 8 総仕上げプロジェクト: Docker + CI/CD + クラウドデプロイの実践",
     version="1.0.0",

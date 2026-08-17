@@ -7,8 +7,7 @@ tests/test_auth.py: 認証エンドポイントのテスト
   GET  /users/me       プロフィール取得
 """
 
-from datetime import datetime, timedelta
-from unittest.mock import patch
+from datetime import timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -191,20 +190,17 @@ class TestGetMe:
         """
         期限切れトークンで 401 が返る。
 
-        unittest.mock.patch で datetime.utcnow を過去の時刻に差し替えて
-        期限切れトークンを生成する。
+        時計をモックするのではなく、負の expires_delta を渡して
+        「発行時点で既に期限切れ」のトークンを作る。
+        モックは実装の内部構造(datetime をどう呼んでいるか)に依存するが、
+        この書き方は公開インターフェースだけに依存するので壊れにくい。
         """
         from app.auth import create_access_token
 
-        past_time = datetime.utcnow() - timedelta(hours=2)
-
-        # auth モジュールの datetime.utcnow を過去時刻に差し替える
-        with patch("app.auth.datetime") as mock_dt:
-            mock_dt.utcnow.return_value = past_time
-            expired_token = create_access_token(
-                data={"sub": "1"},
-                expires_delta=timedelta(minutes=30),
-            )
+        expired_token = create_access_token(
+            data={"sub": "1"},
+            expires_delta=timedelta(minutes=-30),
+        )
 
         # 期限切れトークンでリクエストすると 401
         resp = client.get(

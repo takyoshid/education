@@ -23,15 +23,25 @@ project/
 ## 実行方法
 
 ```bash
-# ライブラリのテストを実行
-cd /Users/takuyayoshida/education/phase3-algorithms/project
-python -m pytest dsa_library/ -v    # pytest がある場合
-# または
-python dsa_library/linked_list.py   # 各ファイルを直接実行
+# このプロジェクトのディレクトリへ移動する
+cd phase3-algorithms/project
+
+# 各モジュールに埋め込まれた自己検証を実行する
+# (末尾の if __name__ == "__main__": ブロックが動きます)
+python3 dsa_library/linked_list.py
+python3 dsa_library/hash_table.py
+python3 dsa_library/bst.py
+python3 dsa_library/heap.py
+python3 dsa_library/stack_queue.py
+python3 dsa_library/graph.py
 
 # ベンチマークを実行
-python benchmark.py
+python3 benchmark.py
 ```
+
+> **課題 1 はここから始まります**: このライブラリには pytest 形式のテストが
+> **まだありません**。`tests/test_linked_list.py` のように自分で書くのが最初の課題です。
+> 書き終えたら `python3 -m pytest tests/ -v` で実行できるようになります。
 
 ## 課題
 

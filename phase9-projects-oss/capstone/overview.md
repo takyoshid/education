@@ -11,6 +11,8 @@
 - CI/CD により、コードをプッシュすると自動でテストが走る
 - ポートフォリオとして世界の採用担当者に提示できる
 
+ただし、機能を実装しただけでは修了ではありません。最低3人の利用者からフィードバックを得て改善し、第三者のコードレビューへ対応した証拠を残します。評価方法は [評価ルーブリック](evaluation-rubric.md)、長期的な変更履歴は [Phase横断プロジェクト](../../longitudinal-project/) に従います。
+
 ---
 
 ## 3 つの推奨テーマ
@@ -71,8 +73,8 @@
   - SQLAlchemy 2.x(ORM / Object-Relational Mapper)
   - Pydantic v2(データバリデーション)
   - Alembic(データベースマイグレーション)
-  - python-jose または PyJWT(JWT 認証)
-  - passlib(パスワードハッシュ)
+  - PyJWT(JWT 認証。python-jose は未メンテかつ既知の CVE があるため使わない)
+  - bcrypt または argon2-cffi(パスワードハッシュ。passlib は使わない)
 
 データベース:
   - PostgreSQL 15+

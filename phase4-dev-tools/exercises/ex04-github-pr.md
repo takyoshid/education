@@ -329,4 +329,4 @@ def checkout_book(title, days=14):
 
 ---
 
-模範解答: [ex04-solution.md](./solutions/ex04-solution.md)
+模範解答: [sol04.md](./solutions/sol04.md)

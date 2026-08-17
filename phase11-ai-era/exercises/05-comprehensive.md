@@ -12,7 +12,7 @@ Phase 11 で学んだすべての内容を統合し、AI と協働しながら�
 
 - Phase 11 の Lesson 01〜07 を完了していること
 - Python の基礎が理解できていること
-- Anthropic API キー、または Claude.ai が使えること
+- 任意のLLM providerまたは`FakeLLMClient`が使えること。実API keyは不要
 
 ---
 
@@ -27,8 +27,8 @@ Phase 11 で学んだすべての内容を統合し、AI と協働しながら�
 **機能一覧**:
 
 1. テキストファイルを読み込み、文字数・行数・単語数を集計する
-2. Claude API を使ってテキストの要約を生成する (3 行以内)
-3. Claude API を使って感情分析を行う (ポジティブ / ネガティブ / ニュートラル + 理由)
+2. `LLMClient`境界を使ってテキストの要約を生成する (3 行以内)
+3. 構造化出力とschema検証で感情分析を行う
 4. 結果を JSON ファイルに保存する
 
 **コマンドライン引数**:
@@ -71,7 +71,7 @@ python analyze.py input.txt --output result.json --summarize --sentiment
 
 質問:
 1. どのライブラリを使うべきですか? (引数解析)
-2. Claude API の呼び出しはどの関数に切り出すべきですか?
+2. provider SDKをどのadapterへ隔離すべきですか?
 3. エラーハンドリングで考慮すべき点は何ですか?
 
 答えではなく、考え方と選択肢の比較をお願いします。」
@@ -85,7 +85,7 @@ python analyze.py input.txt --output result.json --summarize --sentiment
 
 1. まず AI なしで、コアロジック (ファイル読み込み・集計) を書く
 2. 詰まったら AI に「ヒント」を求める (答えは求めない)
-3. Claude API 呼び出し部分は Lesson 06 のサンプルを参考に書く
+3. Fakeとprovider adapterは Lesson 06 のinterfaceを参考に書く
 4. 書き終わったら AI にレビューしてもらう
 
 **記録すること**: どの部分を自力で書き、どの部分で AI を使ったか。
@@ -150,6 +150,6 @@ python analyze.py input.txt --output result.json --summarize --sentiment
 ## ヒント
 
 - `argparse` は Python 標準ライブラリです。外部ライブラリ不要で引数解析ができます。
-- Claude API で要約・感情分析を頼む場合、プロンプトで「JSON 形式で返してください」と指定すると後処理が楽になります。
+- JSONを要求するだけで信用せず、schema検証、再試行上限、不正出力caseをtestしてください。
 - テキストが長い場合、API のコンテキストウィンドウに収まるか確認してください。
 - 「とりあえず動く」に満足せず、Lesson 04 のチェックリストを必ず使ってください。

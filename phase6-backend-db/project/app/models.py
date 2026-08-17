@@ -9,7 +9,7 @@ ORM(Object-Relational Mapping)を使うと、Python のクラスが DB のテー
   - tasks: タスク情報(users への外部キーを持つ)
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -52,7 +52,8 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
-        default=datetime.utcnow,
+        # datetime.utcnow は 3.12 で非推奨。UTC であることを型で示す。
+        default=lambda: datetime.now(timezone.utc),
         comment="登録日時(UTC)",
     )
 
@@ -103,7 +104,8 @@ class Task(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         nullable=False,
-        default=datetime.utcnow,
+        # datetime.utcnow は 3.12 で非推奨。UTC であることを型で示す。
+        default=lambda: datetime.now(timezone.utc),
         comment="作成日時(UTC)",
     )
     # 外部キー: users.id を参照

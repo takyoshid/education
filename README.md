@@ -16,13 +16,22 @@
 
 ## この教材の設計思想
 
-1. **手を動かして学ぶ** — 全レッスンに演習と模範解答がある。読むだけでは修了できない
+1. **手を動かして学ぶ** — 各Phaseに演習・模範解答・実技試験・総仕上げプロジェクトがある。読むだけでは修了できない
 2. **なぜ動くかを理解する** — 暗記ではなく原理から。CS基礎を省略しない
 3. **世界基準** — 技術用語は英語併記。英語ドキュメントを読み、英語で発信できる力を育てる
 4. **プロの現場を再現** — Git、コードレビュー、テスト、設計を初期から習慣化する
 5. **AI時代対応** — AIツールを使いこなしつつ、AIに依存しない基礎力を築く
 
-## カリキュラム全体像(想定 12〜18ヶ月)
+## 「修了」の定義
+
+この教材では、読了や自己申告だけを修了としません。通常演習に加えて、初見課題、口頭説明、実行ログ、第三者レビューによって到達度を確認します。
+
+- [客観的到達度評価ガイド](assessment/) — AI利用可・不可の評価、Phase別ゲート、証拠の残し方
+- [Phase横断プロジェクト](longitudinal-project/) — Phase 2から9まで同じプロダクトを変更・運用し続ける実務課題
+
+各Phaseのチェックリストは学習範囲の確認、上記の評価ゲートは能力の確認です。両方を満たして修了とします。
+
+## カリキュラム全体像(想定 14〜20ヶ月)
 
 | Phase | テーマ | 目安期間 |
 |-------|--------|---------|
@@ -30,9 +39,10 @@
 | [1](phase1-computer-basics/) | コンピュータの仕組みと CLI / Linux 基礎 | 3週間 |
 | [2](phase2-programming/) | プログラミング基礎(Python) | 8週間 |
 | [3](phase3-algorithms/) | データ構造とアルゴリズム | 8週間 |
-| [4](phase4-dev-tools/) | Git / GitHub と開発ツール | 3週間 |
+| [4](phase4-dev-tools/) | Git / GitHub と開発ツール（Phase 2後から開始可） | 3週間 |
 | [5](phase5-web-frontend/) | Web の仕組みとフロントエンド(HTML/CSS/JS/TypeScript) | 8週間 |
 | [6](phase6-backend-db/) | バックエンドとデータベース(API / SQL) | 8週間 |
+| [12](phase12-concurrency-reliability/) | 並行処理と信頼性（推奨順はPhase 6の直後） | 4週間 |
 | [7](phase7-software-design/) | ソフトウェア設計・テスト・クリーンコード | 6週間 |
 | [8](phase8-infra-cloud/) | インフラ・クラウド・Docker・CI/CD・セキュリティ | 6週間 |
 | [9](phase9-projects-oss/) | 総合プロジェクトと OSS 貢献 | 8週間 |
@@ -60,7 +70,18 @@ phaseN-<name>/
 
 ## 学習の進め方
 
-1. Phase 0 から順番に進める(Phase 10 の英語学習だけは Phase 2 開始時から並行)
+1. Phase 0 から順番に進める。Phase 10 の英語学習は Phase 2 から、Gitの最小セットとPhase横断プロジェクトもPhase 2から並行する
 2. 各レッスンの演習を解いてから解答を見る
-3. Phase 末の修了条件チェックリストを全て満たしてから次へ進む
+3. Phase 末のチェックリストに加え、[客観的到達度評価](assessment/)のPhaseゲートを満たしてから次へ進む
 4. わからないことは 15 分自力で調べ、それでも解けなければ質問する(質問の仕方も Phase 0 で学ぶ)
+
+Phase 12は追加時の識別番号です。学習順はPhase 6 → Phase 12 → Phase 7を推奨します。
+
+## 教材自体の品質確認
+
+このリポジトリは、教材内リンク、Phase構造、Python構文、プロジェクトのテスト、フロントエンドbuildをCIで検査します。ローカルでは次を実行できます。
+
+```bash
+ruby scripts/validate_curriculum.rb
+python3 -m compileall -q phase2-programming phase3-algorithms phase6-backend-db phase7-software-design phase8-infra-cloud
+```
