@@ -9,6 +9,16 @@
 - `useEffect` で副作用を扱える
 - コンポーネントのリストを `key` 付きで描画できる
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> このレッスンのコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 1. React とはなにか
@@ -466,7 +476,7 @@ function PostList() {
         setLoading(true);
         setError(null);
         const res = await fetch(
-          "https://jsonplaceholder.typicode.com/posts?_limit=5",
+          "http://127.0.0.1:8787/posts?_limit=5",
           { signal: controller.signal }
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);

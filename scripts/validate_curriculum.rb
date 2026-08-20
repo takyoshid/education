@@ -7,7 +7,15 @@ require "open3"
 ROOT = Pathname.new(__dir__).join("..").expand_path
 errors = []
 
-markdown_files = ROOT.glob("**/*.md").reject { |path| path.to_s.include?("/.git/") }
+# 検査対象は教材そのものだけ。node_modules や仮想環境の中には、
+# 教材が責任を持たない大量の Markdown があり、そこの壊れたリンクを
+# 報告しても直しようがない。学習者が npm install した直後に
+# 検査が落ちる、という無意味な失敗を避ける。
+IGNORED_DIRECTORIES = %w[.git node_modules .venv venv dist build __pycache__].freeze
+
+markdown_files = ROOT.glob("**/*.md").reject do |path|
+  path.relative_path_from(ROOT).each_filename.any? { |part| IGNORED_DIRECTORIES.include?(part) }
+end
 
 markdown_files.each do |file|
   content = file.read(encoding: "UTF-8")
@@ -39,6 +47,34 @@ markdown_files.each do |file|
 end
 
 phase_dirs = ROOT.children.select { |path| path.directory? && path.basename.to_s.match?(/\Aphase\d+-/) }
+
+# README trees and tables often show file names as plain text rather than links.
+# Check README references separately so renames cannot leave a curriculum index
+# pointing learners at files that no longer exist. Paths are resolved from the
+# phase root; bare names may exist anywhere below the phase that mentions them.
+curriculum_reference = %r{
+  (?<![A-Za-z0-9_.-])
+  (?:[A-Za-z0-9_.-]+/)*
+  (?:\d{2}-[A-Za-z0-9_.-]+\.md|ex\d{2}[-_][A-Za-z0-9_.-]*)
+}x
+
+phase_dirs.each do |phase|
+  phase.glob("**/README.md").each do |file|
+    content = file.read(encoding: "UTF-8")
+    content.scan(curriculum_reference).each do |reference|
+      basename = Pathname.new(reference).basename.to_s
+      exists = if reference.include?("/")
+                 phase.join(reference).cleanpath.exist?
+               else
+                 !phase.glob("**/#{basename}").empty?
+               end
+      next if exists
+
+      errors << "missing curriculum file: #{file.relative_path_from(ROOT)} -> #{reference}"
+    end
+  end
+end
+
 phase_dirs.sort.each do |phase|
   readme = phase.join("README.md")
   errors << "missing phase README: #{phase.basename}" unless readme.file?
@@ -50,20 +86,12 @@ phase_dirs.sort.each do |phase|
   end
 end
 
-assessed_phases = %w[
-  phase2-programming
-  phase4-ai-era
-  phase5-algorithms
-  phase6-web-frontend
-  phase7-backend-db
-  phase8-concurrency-reliability
-  phase9-software-design
-  phase10-infra-cloud
-  phase11-distributed-systems
-]
-assessed_phases.each do |name|
-  assessment = ROOT.join(name, "assessment", "README.md")
-  errors << "missing practical assessment: #{name}" unless assessment.file?
+phase_dirs.each do |phase|
+  assessment = phase.join("assessment", "README.md")
+  errors << "missing practical assessment: #{phase.basename}" unless assessment.file?
+
+  retrieval_check = phase.join("assessment", "retrieval-check.md")
+  errors << "missing retrieval check: #{phase.basename}" unless retrieval_check.file?
 end
 
 longitudinal_starter = ROOT.join("longitudinal-project", "starter", "phase2")
@@ -79,6 +107,7 @@ if errors.empty?
   exit 0
 end
 
+errors.uniq!
 warn "Curriculum validation failed with #{errors.length} error(s):"
 errors.each { |error| warn "- #{error}" }
 exit 1

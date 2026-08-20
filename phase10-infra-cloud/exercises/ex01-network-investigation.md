@@ -91,7 +91,7 @@ dig CNAME www.github.com
 
 ```bash
 # レスポンスヘッダのみ表示（-I は HEAD メソッドを送信）
-curl -I https://httpbin.org/get
+curl -I https://example.com
 ```
 
 **確認すること**
@@ -131,25 +131,33 @@ curl -vI https://github.com 2>&1 | head -60
 
 ### 2-4. JSON API を呼び出す
 
+ここからは教材用の API サーバを使います。送ったリクエストをそのまま返してくれるので、
+**自分が何を送ったのか**を確認できます。別のターミナルで起動しておいてください。
+
 ```bash
-# httpbin.org は動作確認用の無料 API サービス
-curl https://httpbin.org/get
+python3 fixtures/server.py
+```
+
+```bash
+# リクエストの内容をそのまま返してもらう
+curl http://127.0.0.1:8787/get
 
 # ヘッダを付けてリクエスト
-curl -H "X-Custom-Header: hello" https://httpbin.org/get
+curl -H "X-Custom-Header: hello" http://127.0.0.1:8787/get
 
 # POST リクエストを送る
 curl -X POST \
   -H "Content-Type: application/json" \
   -d '{"name": "Alice", "age": 30}' \
-  https://httpbin.org/post
+  http://127.0.0.1:8787/post
 ```
 
 **確認すること**
 
-- `httpbin.org/get` はどのような情報を返しましたか？
+- `/get` はどのような情報を返しましたか？
 - カスタムヘッダ（`X-Custom-Header`）はレスポンスの `headers` フィールドに含まれていましたか？
 - POST で送った JSON は `json` フィールドに正しく入っていましたか？
+- ここまでの課題（2-1〜2-3）は実在のネットワークを相手にしていました。この課題だけ手元のサーバを使っているのはなぜだと思いますか？（ヒント: DNS も TLS も、`127.0.0.1` には登場しません）
 
 ### 2-5. TLS 証明書の有効期限を確認する
 
@@ -184,7 +192,7 @@ ss -tlnp
 ### 3-2. HTTP ヘッダを使った情報収集
 
 ```bash
-curl -sI https://httpbin.org/response-headers?X-Powered-By=FastAPI
+curl -sI "http://127.0.0.1:8787/response-headers?X-Powered-By=FastAPI"
 ```
 
 `X-Powered-By` ヘッダはなぜレスポンスに含めるべきではないケースがあるか説明してください。

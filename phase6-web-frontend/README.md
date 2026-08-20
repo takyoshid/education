@@ -24,6 +24,16 @@ Web を発明した彼は、特許を取らず、使用料も求めず、技術�
 - コマンドラインの基本操作(cd, ls, mkdir, git 等)
 - Node.js 22 以上がインストールされていること
 
+### このPhaseで使うAPIサーバ
+
+レッスン 07 以降と、演習・総仕上げプロジェクトは、教材に同梱した API サーバを相手にします。作業前にリポジトリのルートで起動してください。
+
+```bash
+python3 fixtures/server.py
+```
+
+依存パッケージはありません。オフラインでも動きます。外部のサービスを使わない理由と、`_delay` / `_fail` / `_empty` で loading・error・empty を狙って再現する方法は [fixtures/README.md](../fixtures/README.md) にあります。
+
 ## 目安期間
 
 8 週間(1 日 2〜3 時間を想定)
@@ -53,35 +63,32 @@ phase6-web-frontend/
     07-async-javascript.md
     08-modern-js-tooling.md
     09-typescript-intro.md
-    10-react-intro.md
+    10-react-basics.md
     11-state-and-data-fetching.md
-    12-performance-and-seo.md
+    12-performance-seo.md
   exercises/
-    ex01-http-devtools.md
-    ex02-html-form.md
-    ex03-css-card.md
-    ex04-css-layout.md
-    ex05-js-basics.md
-    ex06-dom-events.md
-    ex07-fetch-api.md
-    ex08-modules-vite.md
-    ex09-typescript.md
-    ex10-react-components.md
-    ex11-todo-app-react.md
-    ex12-performance-audit.md
+    ex01-html-semantics.md
+    ex02-css-card.md
+    ex03-js-basics.md
+    ex04-async-fetch.md
+    ex05-typescript.md
+    ex06-react.md
     solutions/
-      ex02-html-form-solution.html
-      ex03-css-card-solution.html
-      ex05-js-basics-solution.js
-      ex06-dom-events-solution.html
-      ex07-fetch-api-solution.html
-      ex09-typescript-solution.ts
-      ex10-react-components-solution/
+      ex01-html-semantics-solution.html
+      ex02-css-card-solution.html
+      ex03-js-basics-solution.js
+      ex04-async-fetch-solution.html
+      ex05-typescript-solution.ts
+      ex06-react-solution/
         (Vite + React プロジェクト雛形)
   project/
     README.md
     stage1-vanilla/     ← フレームワークなし実装
     stage2-react/       ← React 実装
+  assessment/
+    README.md           ← 実技試験
+    retrieval-check.md
+    starter/            ← 検索状態machineの未完成コード
 ```
 
 ## 修了条件チェックリスト
@@ -105,7 +112,7 @@ phase6-web-frontend/
 - [ ] this の挙動(通常関数 vs アロー関数)を説明できる
 - [ ] Promise チェーンを async/await で書き直せる
 - [ ] fetch API でデータを取得し DOM に反映できる
-- [ ] ES Modules の import/export を使えるる
+- [ ] ES Modules の import/export を使える
 - [ ] npm でパッケージをインストールし、Vite で開発サーバーを起動できる
 
 ### TypeScript
@@ -126,6 +133,7 @@ phase6-web-frontend/
 - [ ] 外部 API を使ったシングルページアプリを Vanilla JS で実装できる
 - [ ] 同じアプリを React + TypeScript で再実装できる
 - [ ] Lighthouse スコアで Performance 80 以上、Accessibility 90 以上を達成できる
+- [ ] [Phase 6 実技試験](assessment/)に合格した
 
 ## 学習の進め方
 

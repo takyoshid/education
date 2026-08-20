@@ -7,6 +7,16 @@
 - Vite で開発環境を構築できる
 - バンドラーの役割とビルドプロセスを理解する
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> このレッスンのコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 1. ES Modules
@@ -366,7 +376,7 @@ export interface WeatherData {
 import type { GeocodingResult, WeatherData } from "./types";
 
 export async function getCoordinates(city: string): Promise<GeocodingResult> {
-  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ja`;
+  const url = `http://127.0.0.1:8787/v1/search?name=${encodeURIComponent(city)}&count=1&language=ja`;
   const response = await fetch(url);
   if (!response.ok) throw new Error("座標の取得に失敗しました");
   const data = await response.json();
@@ -375,7 +385,7 @@ export async function getCoordinates(city: string): Promise<GeocodingResult> {
 }
 
 export async function getWeather(lat: number, lon: number): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
+  const url = `http://127.0.0.1:8787/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
   const response = await fetch(url);
   if (!response.ok) throw new Error("天気の取得に失敗しました");
   return response.json();
@@ -458,6 +468,15 @@ form.addEventListener("submit", async (event) => {
 
 `package-lock.json` は依存パッケージの正確なバージョンを記録します。
 コミットしないと、チームメンバーや CI で `npm install` をした際に異なるバージョンがインストールされる可能性があります。
+
+**この教材自身も同じことをしています。** `phase6-web-frontend/project/stage2-react/` のロックファイルはコミットされていて、CI が 2 通りの入れ方で検査しています。
+
+- `npm ci`(ロックのとおり) — 固定した木がまだ入ることを確かめる
+- `npm install --no-package-lock`(解決し直す) — 依存側の変更で腐り始めていないかを確かめる
+
+**なぜ両方やるのか。** 固定するだけでは、固定した内容が古びていくことに気づけません。固定しないだけでは、手元と他人の環境が食い違います。**目的が違う 2 つの検査**なので、どちらか一方では足りないのです。
+
+実物は [`.github/workflows/curriculum-quality.yml`](../../.github/workflows/curriculum-quality.yml) にあります。動いているワークフローなので、読む価値があります。
 
 ### 間違い 2: ブラウザ用コードで Node.js のモジュールを使う
 

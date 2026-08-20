@@ -248,7 +248,7 @@ Cache-Control: no-cache
 
   <!-- preconnect: 外部ドメインへの接続を事前に確立 -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://api.open-meteo.com" crossorigin />
+  <link rel="preconnect" href="https://api.example.com" crossorigin />
 </head>
 ```
 

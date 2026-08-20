@@ -72,20 +72,22 @@ phase7-backend-db/
 │   ├── 08-python-db.md
 │   ├── 09-auth.md
 │   ├── 10-security.md
-│   ├── 11-testing.md
+│   ├── 11-api-testing.md
 │   └── 12-logging-config.md
 ├── exercises/              # 演習問題
 │   ├── ex01-http.md
-│   ├── ex02-rest-design.md
-│   ├── ex03-fastapi.md
-│   ├── ex04-sql.md
+│   ├── ex02-sql-basics.md
+│   ├── ex03-sql-advanced.md
+│   ├── ex04-fastapi.md
 │   ├── ex05-auth.md
+│   ├── ex06-security.md
 │   └── solutions/          # 模範解答(実行可能なコード付き)
-│       ├── ex01_solution.py
-│       ├── ex02_solution.md
-│       ├── ex03_solution.py
-│       ├── ex04_solution.sql
-│       └── ex05_solution.py
+│       ├── ex01_solution.md
+│       ├── ex02_solution.sql
+│       ├── ex03_solution.sql
+│       ├── ex04_solution.py
+│       ├── ex05_solution.py
+│       └── ex06_solution.md
 └── project/                # 総仕上げプロジェクト
     ├── README.md
     ├── requirements.txt
@@ -135,6 +137,7 @@ phase7-backend-db/
 - [ ] ユーザー登録・ログイン・JWT 認証が動作する
 - [ ] テストカバレッジ 70% 以上
 - [ ] Phase 6 のフロントエンドと接続して動作確認した
+- [ ] [Phase 7 実技試験](assessment/)に合格した
 
 ---
 

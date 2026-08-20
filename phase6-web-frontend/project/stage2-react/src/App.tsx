@@ -111,16 +111,7 @@ export default function App() {
         }}
       >
         <p>
-          天気データ提供:{" "}
-          <a
-            href="https://open-meteo.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "#0066cc" }}
-          >
-            Open-Meteo
-          </a>
-          (無料・オープンソース)
+          天気データ: 教材同梱の学習用サーバ(実在の観測値ではありません)
         </p>
       </footer>
     </div>

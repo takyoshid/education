@@ -62,14 +62,14 @@
 
 ```
 フロントエンド:
-  - React 18+
+  - React(版は [versions.md](../../versions.md) を参照)
   - TypeScript(強く推奨)
   - React Router v6(ルーティング)
   - Tailwind CSS または CSS Modules(スタイリング)
   - Axios または Fetch API(HTTP クライアント)
 
 バックエンド:
-  - FastAPI(Python 3.12+)
+  - FastAPI(Python の版は [versions.md](../../versions.md) を参照)
   - SQLAlchemy 2.x(ORM / Object-Relational Mapper)
   - Pydantic v2(データバリデーション)
   - Alembic(データベースマイグレーション)
@@ -77,7 +77,7 @@
   - bcrypt または argon2-cffi(パスワードハッシュ。passlib は使わない)
 
 データベース:
-  - PostgreSQL 15+
+  - PostgreSQL(版は [versions.md](../../versions.md) を参照)
 
 コンテナ化:
   - Docker(各サービスの Dockerfile)
@@ -112,7 +112,7 @@ CI/CD:
 ```yaml
 services:
   db:
-    image: postgres:15
+    image: postgres:16-alpine
     environment:
       POSTGRES_USER: appuser
       POSTGRES_PASSWORD: apppassword

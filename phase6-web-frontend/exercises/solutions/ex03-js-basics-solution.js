@@ -238,7 +238,7 @@ async function* fetchPages(baseUrl, totalPages) {
 
 (async () => {
   let count = 0;
-  for await (const posts of fetchPages("https://jsonplaceholder.typicode.com/posts", 3)) {
+  for await (const posts of fetchPages("http://127.0.0.1:8787/posts", 3)) {
     console.log(`ページ受信: ${posts.length} 件`);
     count += posts.length;
     if (count >= 6) break;

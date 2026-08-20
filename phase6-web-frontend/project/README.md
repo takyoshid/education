@@ -2,7 +2,7 @@
 
 ## 概要
 
-外部 API(Open-Meteo / Open-Meteo Geocoding)を使った天気アプリを **2 段階** で実装します。
+天気 API を使ったアプリを **2 段階** で実装します。
 
 - **Stage 1 — Vanilla JS**: フレームワークなし。HTML + CSS + vanilla JavaScript のみで実装
 - **Stage 2 — React + TypeScript**: 同等の機能を Vite + React + TypeScript で再実装
@@ -12,12 +12,33 @@
 
 ---
 
-## 使用する API(無料・認証不要)
+## 使用する API
 
-| API | URL | 用途 |
-|-----|-----|------|
-| Open-Meteo Geocoding | `https://geocoding-api.open-meteo.com/v1/search` | 都市名 → 緯度・経度 |
-| Open-Meteo Forecast  | `https://api.open-meteo.com/v1/forecast`          | 緯度・経度 → 天気データ |
+**先に教材用の API サーバを起動してください。** 起動していないとアプリは何も表示できません。
+
+```bash
+# リポジトリのルートで
+python3 fixtures/server.py
+```
+
+| エンドポイント | 用途 |
+|-----|------|
+| `http://127.0.0.1:8787/v1/search` | 都市名 → 緯度・経度 |
+| `http://127.0.0.1:8787/v1/forecast` | 緯度・経度 → 天気データ |
+
+認証は要りません。オフラインでも動きます。**なぜ外部のサービスを使わないのか**は [fixtures/README.md](../../fixtures/README.md) に書いてあります。要点だけ言えば、他人のサーバが止まった日に教材が動かなくなるのを避けるためです。
+
+このサーバは実在の Open-Meteo と同じ形のレスポンスを返します。つまりここで書いたコードは、URL を差し替えれば実サービスに対しても動きます(発展課題 B-05)。
+
+### 状態を狙って再現する
+
+`_delay` / `_fail` / `_empty` をクエリに付けると、応答が遅い・失敗する・0 件になる状況を確実に起こせます。F-03(ローディング)と F-04(エラー)を実装したら、**必ずこれで確認してください。**
+
+```bash
+curl "http://127.0.0.1:8787/v1/search?name=Tokyo&_delay=3000"   # 3 秒待つ
+curl "http://127.0.0.1:8787/v1/search?name=Tokyo&_fail=503"     # 503 で失敗
+curl "http://127.0.0.1:8787/v1/search?name=Tokyo&_empty=1"      # 0 件
+```
 
 ---
 
@@ -41,6 +62,7 @@
 | B-02 | 単位切り替え: 摂氏・華氏を切り替えるボタン |
 | B-03 | お気に入り: 都市をブックマークして素早くアクセスできる |
 | B-04 | ダークモード: `prefers-color-scheme` に対応する |
+| B-05 | 実サービスへの切り替え: `API_BASE` を実在の Open-Meteo に向け、レスポンスの差異を記録する |
 
 ---
 
@@ -49,7 +71,7 @@
 ### ステップ 1: 都市名から座標を取得
 
 ```
-GET https://geocoding-api.open-meteo.com/v1/search
+GET http://127.0.0.1:8787/v1/search
   ?name=Tokyo
   &count=5
   &language=ja
@@ -74,7 +96,7 @@ GET https://geocoding-api.open-meteo.com/v1/search
 ### ステップ 2: 座標から天気を取得
 
 ```
-GET https://api.open-meteo.com/v1/forecast
+GET http://127.0.0.1:8787/v1/forecast
   ?latitude=35.68950
   &longitude=139.69171
   &current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code
@@ -324,8 +346,9 @@ export function useWeather() {
 
 ### CORS エラーが出る
 
-Open-Meteo は CORS を許可しているので直接 fetch できます。
-他の API で CORS エラーが出る場合は、開発環境では Vite のプロキシ設定を使います:
+教材用サーバは CORS を許可しているので、開発サーバから直接 fetch できます。
+許可していない API を叩くとブラウザがリクエストを止めます。その場合、
+開発環境では Vite のプロキシ設定を使います:
 
 ```typescript
 // vite.config.ts
@@ -364,6 +387,5 @@ const forecasts = daily.time.map((date, i) => ({
 
 ## 参考リソース
 
-- Open-Meteo 公式ドキュメント — https://open-meteo.com/en/docs
-- Open-Meteo Geocoding — https://open-meteo.com/en/docs/geocoding-api
+- 教材用 API サーバの説明 — [fixtures/README.md](../../fixtures/README.md)
 - MDN: localStorage — https://developer.mozilla.org/ja/docs/Web/API/Window/localStorage

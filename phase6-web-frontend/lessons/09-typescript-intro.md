@@ -8,6 +8,16 @@
 - ジェネリクスの基本的な使い方を理解する
 - TypeScript のコンパイルエラーを読んで修正できる
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> このレッスンのコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 1. TypeScript とは
@@ -428,7 +438,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 }
 
 export async function searchCity(query: string): Promise<GeocodingResult[]> {
-  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=ja`;
+  const url = `http://127.0.0.1:8787/v1/search?name=${encodeURIComponent(query)}&count=5&language=ja`;
   const data = await fetchJson<GeocodingResponse>(url);
   return data.results ?? [];
 }
@@ -439,7 +449,7 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherRes
     longitude: lon.toString(),
     current: "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,weather_code",
   });
-  return fetchJson<WeatherResponse>(`https://api.open-meteo.com/v1/forecast?${params}`);
+  return fetchJson<WeatherResponse>(`http://127.0.0.1:8787/v1/forecast?${params}`);
 }
 ```
 

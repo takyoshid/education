@@ -6,6 +6,16 @@
 - レベル 2(応用): Grid とメディアクエリでレスポンシブにする
 - レベル 3(発展): CSS カスタムプロパティとアニメーションを加える
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> この演習のカード画像は `http://127.0.0.1:8787/photos/...` から読み込みます。外部のサービスを
+> 使わない理由は [fixtures/README.md](../../fixtures/README.md) にあります。`?_delay=2000` を
+> 付ければ画像の読み込みを遅らせられるので、読み込み中にレイアウトが崩れないか(CLS)を確認できます。
+
 ---
 
 ## 背景
@@ -36,7 +46,7 @@ Flexbox と Grid はモダン CSS レイアウトの両輪です。
   <main class="container">
     <div class="card-list">
       <article class="card">
-        <img src="https://picsum.photos/seed/1/400/200" alt="写真 1" class="card-image" />
+        <img src="http://127.0.0.1:8787/photos/1/400/200" alt="写真 1" class="card-image" />
         <div class="card-body">
           <h2 class="card-title">カード 1</h2>
           <p class="card-text">短い説明文が入ります。このカードは Flexbox で横並びになっています。</p>
@@ -44,7 +54,7 @@ Flexbox と Grid はモダン CSS レイアウトの両輪です。
         </div>
       </article>
       <article class="card">
-        <img src="https://picsum.photos/seed/2/400/200" alt="写真 2" class="card-image" />
+        <img src="http://127.0.0.1:8787/photos/2/400/200" alt="写真 2" class="card-image" />
         <div class="card-body">
           <h2 class="card-title">カード 2</h2>
           <p class="card-text">説明文が長い場合でもカードの高さが揃うように実装しましょう。Flexbox を使います。</p>
@@ -52,7 +62,7 @@ Flexbox と Grid はモダン CSS レイアウトの両輪です。
         </div>
       </article>
       <article class="card">
-        <img src="https://picsum.photos/seed/3/400/200" alt="写真 3" class="card-image" />
+        <img src="http://127.0.0.1:8787/photos/3/400/200" alt="写真 3" class="card-image" />
         <div class="card-body">
           <h2 class="card-title">カード 3</h2>
           <p class="card-text">短い説明。</p>

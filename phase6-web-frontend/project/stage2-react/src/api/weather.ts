@@ -1,5 +1,5 @@
 // =====================================================
-// api/weather.ts — Open-Meteo API 呼び出し
+// api/weather.ts — 天気 API 呼び出し
 // =====================================================
 
 import type {
@@ -7,6 +7,19 @@ import type {
   GeocodingResponse,
   WeatherResponse,
 } from "../types";
+
+/**
+ * 教材用のローカル API サーバ。起動方法と、外部サービスを使わない理由は
+ * fixtures/README.md にある。
+ *
+ *     python3 fixtures/server.py
+ *
+ * このサーバは実在の Open-Meteo と同じ形のレスポンスを返す。発展課題として
+ * 実サービスへ向けたくなったら、この定数を差し替えるだけでよい。
+ * URL を 1 箇所に集めてあるのはそのためで、境界を 1 つにしておくと
+ * 差し替えもテストでの置き換えも安くなる。
+ */
+const API_BASE = "http://127.0.0.1:8787";
 
 /**
  * JSON を fetch する汎用ラッパー
@@ -35,7 +48,7 @@ export async function fetchGeocode(
     language: "ja",
   });
   const data = await fetchJson<GeocodingResponse>(
-    `https://geocoding-api.open-meteo.com/v1/search?${params}`,
+    `${API_BASE}/v1/search?${params}`,
     signal
   );
   if (!data.results || data.results.length === 0) {
@@ -72,7 +85,7 @@ export async function fetchWeather(
     forecast_days: "7",
   });
   return fetchJson<WeatherResponse>(
-    `https://api.open-meteo.com/v1/forecast?${params}`,
+    `${API_BASE}/v1/forecast?${params}`,
     signal
   );
 }

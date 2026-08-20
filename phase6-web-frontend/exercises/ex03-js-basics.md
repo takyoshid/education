@@ -6,6 +6,16 @@
 - レベル 2(応用): 高階関数とクロージャを理解する
 - レベル 3(発展): ジェネレータと遅延評価を実装する
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> この演習のコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 背景
@@ -191,7 +201,7 @@ async function* fetchPages(baseUrl, totalPages) {
 // テスト
 async function main() {
   let count = 0;
-  for await (const posts of fetchPages("https://jsonplaceholder.typicode.com/posts", 3)) {
+  for await (const posts of fetchPages("http://127.0.0.1:8787/posts", 3)) {
     console.log(`ページ受信: ${posts.length} 件`);
     count += posts.length;
     if (count >= 6) break; // 6 件取得したら止める

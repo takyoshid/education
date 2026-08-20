@@ -6,6 +6,16 @@
 - レベル 2(応用): エラーハンドリングとリトライを実装する
 - レベル 3(発展): キャンセル可能な API クライアントクラスを作る
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> この演習のコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 背景
@@ -61,10 +71,10 @@
     // TODO: 以下を実装する
 
     // 1. ページ読み込み時にユーザー一覧を取得して select に追加する
-    //    GET https://jsonplaceholder.typicode.com/users
+    //    GET http://127.0.0.1:8787/users
 
     // 2. 「読み込む」ボタンを押すと投稿を取得して表示する
-    //    GET https://jsonplaceholder.typicode.com/posts?userId={userId}
+    //    GET http://127.0.0.1:8787/posts?userId={userId}
     //    userId が空ならすべての投稿を取得
 
     // 3. 取得中は status に「読み込み中...」を表示する
@@ -129,7 +139,7 @@ async function fetchWithTimeout(url, timeoutMs = 5000) {
 (async () => {
   // 正常系
   try {
-    const res = await fetchWithRetry("https://jsonplaceholder.typicode.com/posts/1");
+    const res = await fetchWithRetry("http://127.0.0.1:8787/posts/1");
     const post = await res.json();
     console.log("取得成功:", post.title);
   } catch (e) {
@@ -138,7 +148,7 @@ async function fetchWithTimeout(url, timeoutMs = 5000) {
 
   // タイムアウトテスト(1ms なのでタイムアウトするはず)
   try {
-    await fetchWithTimeout("https://jsonplaceholder.typicode.com/posts", 1);
+    await fetchWithTimeout("http://127.0.0.1:8787/posts", 1);
     console.log("タイムアウトしなかった");
   } catch (e) {
     console.log("タイムアウト検知:", e.name); // AbortError
@@ -213,7 +223,7 @@ class ApiClient {
 
 // テスト
 (async () => {
-  const client = new ApiClient("https://jsonplaceholder.typicode.com", {
+  const client = new ApiClient("http://127.0.0.1:8787", {
     timeoutMs: 5000,
     cacheMs: 5000,
   });

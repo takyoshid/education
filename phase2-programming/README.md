@@ -84,7 +84,7 @@ exercises/
   ex11_testing/
   ex12_style/
   solutions/
-    ex01_solutions.py / ex01_solutions.md
+    ex01_solutions.md / ex02_solutions.py など
     ...
 project/
   README.md        (仕様書)
@@ -130,6 +130,7 @@ project/
 - [ ] 各演習の「応用」問題を 80% 以上解いた
 - [ ] 総仕上げプロジェクト(家計簿 CLI)を完成させ、全テストが green になった
 - [ ] プロジェクトを Git リポジトリで管理し、README を書いた
+- [ ] [Phase 2 実技試験](assessment/)に合格した
 
 ---
 

@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>天気アプリ</title>
   <meta name="description" content="都市名を入力してリアルタイムの天気情報を確認できます。" />
-  <!-- preconnect で接続を事前確立(パフォーマンス最適化) -->
-  <link rel="preconnect" href="https://geocoding-api.open-meteo.com" />
-  <link rel="preconnect" href="https://api.open-meteo.com" />
+  <!-- API サーバは同じマシン上にあるので preconnect は要らない。
+       外部ドメインを相手にするときは、ここで接続を事前確立するとよい
+       (レッスン 12「リソースヒント」を参照)。 -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -60,9 +60,7 @@
   <footer class="site-footer">
     <p>
       <small>
-        天気データ提供:
-        <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>
-        (無料・オープンソース)
+        天気データ: 教材同梱の学習用サーバ(実在の観測値ではありません)
       </small>
     </p>
   </footer>

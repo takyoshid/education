@@ -136,7 +136,7 @@
     /** ユーザー一覧を取得して select に追加する */
     async function loadUsers() {
       try {
-        const users = await fetchJson("https://jsonplaceholder.typicode.com/users");
+        const users = await fetchJson("http://127.0.0.1:8787/users");
         users.forEach(user => {
           const option = document.createElement("option");
           option.value = String(user.id);
@@ -163,8 +163,8 @@
       try {
         const userId = userFilter.value;
         const url = userId
-          ? `https://jsonplaceholder.typicode.com/posts?userId=${encodeURIComponent(userId)}`
-          : "https://jsonplaceholder.typicode.com/posts";
+          ? `http://127.0.0.1:8787/posts?userId=${encodeURIComponent(userId)}`
+          : "http://127.0.0.1:8787/posts";
 
         const posts = await fetchJson(url, { signal });
         showPosts(posts);

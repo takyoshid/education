@@ -7,6 +7,16 @@
 - fetch API でデータを取得し、DOM に反映できる
 - エラーハンドリングを適切に実装できる
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> このレッスンのコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 1. なぜ非同期処理が必要か
@@ -239,7 +249,7 @@ async function fastLoad() {
 
 ```javascript
 async function getUsers() {
-  const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const response = await fetch("http://127.0.0.1:8787/users");
 
   // レスポンスのチェック
   if (!response.ok) {
@@ -277,7 +287,7 @@ await response.formData(); // FormData として読む
 
 ```javascript
 async function createPost(title, body) {
-  const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+  const response = await fetch("http://127.0.0.1:8787/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -357,7 +367,7 @@ Open-Meteo API(無料・認証不要)を使います。
 
     // 都市名から座標を取得(Geocoding API)
     async function getCoordinates(city) {
-      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=ja`;
+      const url = `http://127.0.0.1:8787/v1/search?name=${encodeURIComponent(city)}&count=1&language=ja`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("座標の取得に失敗しました");
       const data = await response.json();
@@ -369,7 +379,7 @@ Open-Meteo API(無料・認証不要)を使います。
 
     // 座標から天気を取得
     async function getWeather(lat, lon) {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
+      const url = `http://127.0.0.1:8787/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
       const response = await fetch(url);
       if (!response.ok) throw new Error("天気の取得に失敗しました");
       return response.json();

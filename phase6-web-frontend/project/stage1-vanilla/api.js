@@ -1,6 +1,17 @@
 // =====================================================
-// api.js — Open-Meteo API 呼び出し
+// api.js — 天気 API 呼び出し
 // =====================================================
+
+/**
+ * 教材用のローカル API サーバ。起動方法と、外部サービスを使わない理由は
+ * fixtures/README.md にある。
+ *
+ *     python3 fixtures/server.py
+ *
+ * このサーバは実在の Open-Meteo と同じ形のレスポンスを返す。発展課題として
+ * 実サービスへ向けたくなったら、この定数を差し替えるだけでよい。
+ */
+const API_BASE = "http://127.0.0.1:8787";
 
 /**
  * JSON を fetch して返す汎用ラッパー
@@ -36,9 +47,7 @@ export async function fetchGeocode(query) {
     count: "5",
     language: "ja",
   });
-  const data = await fetchJson(
-    `https://geocoding-api.open-meteo.com/v1/search?${params}`
-  );
+  const data = await fetchJson(`${API_BASE}/v1/search?${params}`);
   if (!data.results || data.results.length === 0) {
     throw new Error(`「${query}」が見つかりませんでした。別の都市名をお試しください。`);
   }
@@ -88,5 +97,5 @@ export async function fetchWeather(lat, lon) {
     timezone: "auto",
     forecast_days: "7",
   });
-  return fetchJson(`https://api.open-meteo.com/v1/forecast?${params}`);
+  return fetchJson(`${API_BASE}/v1/forecast?${params}`);
 }

@@ -376,7 +376,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:15
+        image: postgres:16-alpine
         env:
           POSTGRES_USER: testuser
           POSTGRES_PASSWORD: testpass

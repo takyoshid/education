@@ -180,26 +180,28 @@ A レコード側だけ更新すればよい点です。
 ### 2-1. レスポンスヘッダの確認
 
 ```bash
-curl -I https://httpbin.org/get
+curl -I https://example.com
 ```
 
 実行結果例:
 
 ```
 HTTP/2 200
-date: Sun, 06 Jul 2025 01:00:00 GMT
-content-type: application/json
-content-length: 317
-server: gunicorn/19.9.0
-access-control-allow-origin: *
-access-control-allow-credentials: true
+content-type: text/html; charset=UTF-8
+content-length: 1256
+date: Mon, 01 Sep 2025 09:00:00 GMT
+cache-control: max-age=604800
 ```
 
 **解説**
 
 - HTTP ステータスコード: `200` (OK) — リクエストが成功
-- `Content-Type: application/json` — レスポンスボディが JSON 形式であることを示す
-- `Server: gunicorn/19.9.0` — httpbin.org のバックエンドが Gunicorn (Python の WSGI サーバー) で動いていることがわかります
+- `Content-Type: text/html; charset=UTF-8` — レスポンスボディが HTML であることを示す
+- `Cache-Control: max-age=604800` — 7 日間キャッシュしてよい、という指示
+
+ヘッダの顔ぶれはサーバによって違います。`Server:` ヘッダを返すサーバもあり、
+その場合は使っているソフトウェアと版数が外から分かってしまいます。
+これが課題 3-2 で問う話につながります。
 
 ---
 
@@ -273,7 +275,7 @@ curl -vI https://github.com 2>&1 | head -60
 ### 2-4. JSON API の呼び出し
 
 ```bash
-curl https://httpbin.org/get
+curl http://127.0.0.1:8787/get
 ```
 
 実行結果例:
@@ -282,25 +284,25 @@ curl https://httpbin.org/get
 {
   "args": {},
   "headers": {
-    "Accept": "*/*",
-    "Host": "httpbin.org",
-    "User-Agent": "curl/8.4.0"
+    "Host": "127.0.0.1:8787",
+    "User-Agent": "curl/8.4.0",
+    "Accept": "*/*"
   },
-  "origin": "203.0.113.1",
-  "url": "https://httpbin.org/get"
+  "method": "GET",
+  "url": "http://127.0.0.1:8787/get"
 }
 ```
 
 ```bash
-curl -H "X-Custom-Header: hello" https://httpbin.org/get
+curl -H "X-Custom-Header: hello" http://127.0.0.1:8787/get
 ```
 
 ```json
 {
   "headers": {
-    "Accept": "*/*",
-    "Host": "httpbin.org",
+    "Host": "127.0.0.1:8787",
     "User-Agent": "curl/8.4.0",
+    "Accept": "*/*",
     "X-Custom-Header": "hello"
   },
   ...
@@ -309,10 +311,23 @@ curl -H "X-Custom-Header: hello" https://httpbin.org/get
 
 **解説**
 
-- `httpbin.org` は送信したリクエストの情報をそのまま返してくれるデバッグ用 API サービスです
+- 教材用サーバの `/get` は、送信したリクエストの情報をそのまま返します
 - `headers` フィールドにカスタムヘッダ (`X-Custom-Header: hello`) が含まれています
 - これにより、curl が正しくヘッダを送信できたことが確認できます
 - POST で送った JSON は `json` フィールドに入って返ってきます
+
+**最後の問いについて**
+
+課題 2-1 から 2-3 では、DNS 解決・TLS ハンドシェイク・証明書の検証を観察しました。
+これらは**実在のネットワークがないと起こりません**。`127.0.0.1` への通信では、
+名前解決も暗号化も発生しないので、観察する対象そのものが消えます。
+
+一方 2-4 で見たかったのは「自分が送ったヘッダとボディ」です。これはネットワークの
+遠さとは関係がないので、手元のサーバで十分であり、そのほうが確実です。
+外部サービスに頼ると、そのサービスが止まった日に演習も止まります。
+
+**主題がネットワークそのものなら実網へ、主題がデータなら手元へ。** この使い分けは
+教材全体で一貫しています(詳細は [fixtures/README.md](../../../fixtures/README.md))。
 
 ---
 
