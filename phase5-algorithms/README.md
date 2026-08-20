@@ -135,6 +135,7 @@ phase5-algorithms/
 
 - [ ] project/ の自作データ構造ライブラリが全テストを通過する
 - [ ] benchmark.py を実行して各データ構造の性能差を確認・説明できる
+- [ ] [Phase 5 実技試験](assessment/)に合格した
 
 ---
 

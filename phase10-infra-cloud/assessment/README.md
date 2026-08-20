@@ -1,5 +1,7 @@
 # Phase 10 実技試験 — 本番障害の診断と復旧
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 - 制限時間: 180分
 - `starter/evidence/`のログ、メトリクス、deploy情報だけから障害を診断する
 - 最初の30分は設定を変更せず、仮説と追加確認を記録する

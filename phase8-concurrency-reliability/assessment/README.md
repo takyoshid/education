@@ -1,5 +1,7 @@
 # Phase 8 実技試験 — 重複と停止に耐える処理系
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 - 制限時間: 180分
 - [bank transfer](../exercises/bank-transfer/)と[Reliable Worker](../project/)を初見状態から完成させる
 - 最初に不変条件と失敗modelを書き、壊れるtestを再現してから修正する

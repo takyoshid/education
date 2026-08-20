@@ -1,5 +1,7 @@
 # Phase 4 実技試験 — Provider Migrationと安全性回帰
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 - 制限時間: 180分
 - 実API不要。提供するfake providerだけで完了可能
 

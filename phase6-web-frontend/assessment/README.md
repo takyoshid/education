@@ -1,5 +1,7 @@
 # Phase 6 実技試験 — Accessible Search UI
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 - 制限時間: 150分
 - starterの検索状態machineを完成させ、HTML/CSSで画面を実装する
 - AIなしの基礎回と、AI利用ログを残す改善回を分ける

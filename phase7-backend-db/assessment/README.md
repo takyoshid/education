@@ -1,5 +1,7 @@
 # Phase 7 実技試験 — 認可欠陥のあるTask Service
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 - 制限時間: 150分
 - `starter/task_service.py`を、API endpointから利用されるdomain serviceと見立てて修正する
 - 公開テストに加え、認可・重複・境界値・同時更新のテストを最低4件追加する

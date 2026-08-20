@@ -1,5 +1,7 @@
 # Phase 5 実技試験 — 依存関係スケジューラー
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 ## 試験条件
 
 - 制限時間: 120分

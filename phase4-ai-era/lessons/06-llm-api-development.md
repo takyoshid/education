@@ -96,3 +96,11 @@ model、provider、promptの変更は挙動変更です。変更前後で固定e
 ## 演習
 
 [演習03](../exercises/03-claude-api-chatbot.md)で2つのfake providerを交換できるchat serviceを作ります。実API接続は任意のadapterとして最後に追加し、core testはnetworkなしで通してください。
+
+## 確認問題
+
+1. Provider固有SDKの型をcoreへ漏らすと、provider交換時に何が問題になりますか？
+2. Fake providerを使うテストが実APIを使うテストより決定的になる理由を説明してください。
+3. 構造化出力を受け取る際、JSONとして読めること以外に何を検証すべきですか？
+4. 429へのretryが許される場合と、非冪等なtool実行をretryしてはいけない場合の違いは何ですか？
+5. Agentにtoken、cost、tool回数、wall-clockの上限を設ける理由を説明してください。

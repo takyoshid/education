@@ -1,5 +1,7 @@
 # Phase 9 実技試験 — 挙動を守るレガシー変更
 
+知識の再現は[Retrieval Check](retrieval-check.md)で先に確認します。
+
 - 制限時間: 150分
 - 先に`legacy_invoice.py`を読み、既存挙動をcharacterization testへ固定する
 - その後「返金は元の割引後金額を超えられない」という仕様を追加する
