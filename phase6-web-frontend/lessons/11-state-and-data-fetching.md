@@ -8,6 +8,16 @@
 - データフェッチの状態(loading / error / data)を堅牢に管理できる
 - `useMemo` と `useCallback` でパフォーマンスを改善できる
 
+> **先に教材用の API サーバを起動してください。**
+>
+> ```bash
+> python3 fixtures/server.py
+> ```
+>
+> このレッスンのコードは `http://127.0.0.1:8787` を叩きます。外部のサービスを使わない理由は
+> [fixtures/README.md](../../fixtures/README.md) にあります。`_delay` / `_fail` / `_empty` を
+> クエリに付ければ、遅延・失敗・0 件を狙って再現できます。
+
 ---
 
 ## 1. useState の限界と useReducer
@@ -353,7 +363,7 @@ interface User {
 
 function UserDetail({ userId }: { userId: number }) {
   const { data: user, loading, error } = useFetch<User>(
-    `https://jsonplaceholder.typicode.com/users/${userId}`
+    `http://127.0.0.1:8787/users/${userId}`
   );
 
   if (loading) return <p>読み込み中...</p>;
@@ -439,7 +449,7 @@ function SearchInput() {
   const debouncedQuery = useDebounce(query, 300);
   const { data } = useFetch<User[]>(
     debouncedQuery
-      ? `https://jsonplaceholder.typicode.com/users?name=${debouncedQuery}`
+      ? `http://127.0.0.1:8787/users?name=${debouncedQuery}`
       : ""
   );
 
@@ -525,7 +535,7 @@ const Child = React.memo(function Child({ onAdd }: { onAdd: (text: string) => vo
 function PaginatedList() {
   const [page, setPage] = useState(1);
   const { data: posts, loading } = useFetch<Post[]>(
-    `https://jsonplaceholder.typicode.com/posts?_page=${page}&_limit=10`
+    `http://127.0.0.1:8787/posts?_page=${page}&_limit=10`
   );
 
   return (
@@ -624,118 +634,53 @@ class ErrorBoundary extends Component<Props, State> {
 
 ---
 
-## 6. 実践: 天気アプリの React 版
+## 6. 実践へ
 
-```tsx
-// src/App.tsx
-import { useState } from "react";
-import { useFetch } from "./hooks/useFetch";
+ここまでの内容を組み合わせると、天気アプリの React 版が書けます。**それは[総仕上げプロジェクト](../project/)そのものなので、ここには完成形を載せません。**読んで理解した気になるのと、自分で組み立てるのとでは、身につくものが違います。
 
-interface GeoResult {
-  name: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-}
+代わりに、書き始める前に決めておくべきことだけを挙げます。**これらは React に限らず、状態を持つ UI すべてに当てはまります。**
 
-interface GeoResponse {
-  results: GeoResult[];
-}
+### 何を state に持ち、何を持たないか
 
-interface WeatherCurrent {
-  temperature_2m: number;
-  relative_humidity_2m: number;
-  wind_speed_10m: number;
-  weather_code: number;
-  time: string;
-}
-
-interface WeatherResponse {
-  current: WeatherCurrent;
-  current_units: Partial<Record<keyof WeatherCurrent, string>>;
-}
-
-function weatherLabel(code: number): string {
-  if (code === 0) return "快晴";
-  if (code <= 3) return "くもり";
-  if (code <= 67) return "雨";
-  if (code <= 77) return "雪";
-  if (code <= 99) return "雷雨";
-  return "不明";
-}
-
-function WeatherCard({ location }: { location: GeoResult }) {
-  const url =
-    `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}` +
-    `&longitude=${location.longitude}` +
-    `&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code`;
-
-  const { data: weather, loading, error } = useFetch<WeatherResponse>(url);
-
-  if (loading) return <p>天気を取得中...</p>;
-  if (error) return <p>エラー: {error}</p>;
-  if (!weather) return null;
-
-  const { current, current_units } = weather;
-
-  return (
-    <div style={{ background: "#f0f4ff", borderRadius: 12, padding: 24 }}>
-      <h2>{location.name}, {location.country}</h2>
-      <p style={{ fontSize: "3rem", fontWeight: "bold" }}>
-        {current.temperature_2m}{current_units.temperature_2m}
-      </p>
-      <p>天気: {weatherLabel(current.weather_code)}</p>
-      <p>湿度: {current.relative_humidity_2m}%</p>
-      <p>風速: {current.wind_speed_10m} km/h</p>
-    </div>
-  );
-}
-
-export default function App() {
-  const [query, setQuery] = useState("Tokyo");
-  const [submittedQuery, setSubmittedQuery] = useState("Tokyo");
-  const geoUrl =
-    `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(submittedQuery)}&count=1&language=ja`;
-
-  const { data: geoData, loading: geoLoading, error: geoError } =
-    useFetch<GeoResponse>(geoUrl);
-
-  const location = geoData?.results?.[0];
-
-  return (
-    <div style={{ maxWidth: 600, margin: "40px auto", padding: "0 16px" }}>
-      <h1>天気アプリ</h1>
-      <form
-        style={{ display: "flex", gap: 8, marginBottom: 24 }}
-        onSubmit={e => {
-          e.preventDefault();
-          setSubmittedQuery(query);
-        }}
-      >
-        <input
-          style={{ flex: 1, padding: 10, borderRadius: 6, border: "1px solid #ccc" }}
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          placeholder="都市名を入力(例: Osaka)"
-        />
-        <button
-          type="submit"
-          style={{ padding: "10px 20px", background: "#0066cc", color: "white", border: "none", borderRadius: 6, cursor: "pointer" }}
-        >
-          検索
-        </button>
-      </form>
-
-      {geoLoading && <p>都市を検索中...</p>}
-      {geoError && <p style={{ color: "red" }}>エラー: {geoError}</p>}
-      {!geoLoading && !geoError && !location && (
-        <p>都市が見つかりませんでした。</p>
-      )}
-      {location && <WeatherCard location={location} />}
-    </div>
-  );
-}
 ```
+持つ:     利用者の入力、サーバから取得したデータ、通信の状態
+持たない: 他の state から計算できるもの
+```
+
+「検索結果の件数」を state に持ってはいけません。結果の配列から計算できるからです。同じ事実を 2 か所に持つと、必ずどこかでずれます。
+
+### 5 つの状態を最初に列挙する
+
+書き始める前に、画面が取りうる状態を紙に書き出してください。
+
+| 状態 | 画面に何を出すか |
+|---|---|
+| idle | まだ何も検索していない。使い方を案内する |
+| loading | 通信中。待っていることを伝える |
+| success | 結果を表示する |
+| **empty** | 通信は成功したが 0 件。「見つかりません」と伝える |
+| **error** | 通信が失敗した。原因と次の行動を伝える |
+
+**empty と error を混ぜないでください。** 「見つかりませんでした」と「通信できませんでした」は、利用者が取るべき行動が違います。前者は別の言葉で探す、後者は待ってやり直す。
+
+この 2 つを区別していない実装は非常に多く、[Phase 6 の実技試験](../assessment/)でも明示的に問われます。
+
+### 古い結果が新しい結果を上書きしないようにする
+
+「Tokyo」と入力して検索し、すぐに「Osaka」に変えて再検索したとします。**Tokyo の応答のほうが遅く返ってきたら、画面には Osaka を検索したのに Tokyo が表示されます。**
+
+これは通信の速度が一定でない限り必ず起きる問題で、`AbortController` で古い要求を取り消すか、応答が現在の要求に対応するものかを確認して防ぎます。
+
+> **確認方法**: 教材同梱の API サーバなら、`_delay` を使って狙って再現できます。片方だけ遅くすれば、この不具合を確実に起こせます。
+>
+> ```
+> /v1/search?name=Tokyo&_delay=3000   ← 遅い
+> /v1/search?name=Osaka               ← 速い
+> ```
+
+### 実装は総仕上げプロジェクトで
+
+これらを踏まえて、[`project/`](../project/) の Stage 2 に進んでください。Stage 1(素の JavaScript)を先に作ってあるので、**同じ機能を 2 通りで書くことになります。**その比較が、このレッスンの本当の締めくくりです。
 
 ---
 

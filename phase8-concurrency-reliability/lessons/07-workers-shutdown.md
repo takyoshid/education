@@ -1,4 +1,4 @@
-# Lesson 06: queue・配送保証・graceful shutdown
+# Lesson 07: queue・配送保証・graceful shutdown
 
 ## 学習目標
 

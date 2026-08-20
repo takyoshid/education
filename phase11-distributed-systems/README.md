@@ -46,10 +46,11 @@ Lamport は別のところでこうも書いています。
 |---|---|---|
 | 01 | [なぜ分散するのか](lessons/01-why-distributed.md) | 部分障害、8つの落とし穴、split-brain |
 | 02 | [レプリケーション](lessons/02-replication.md) | single/multi-leader、lag の 3 異常、フェイルオーバー |
-| 03 | [整合性モデルと CAP](lessons/03-consistency-models.md) | linearizable / causal / eventual、PACELC |
-| 04 | [パーティショニング](lessons/04-partitioning.md) | レンジ/ハッシュ、ホットスポット、コンシステントハッシュ |
-| 05 | [キャッシュ戦略](lessons/05-caching.md) | cache-aside、無効化、stampede |
-| 06 | [合意とリーダー選出](lessons/06-consensus.md) | クォーラム、Raft、**分散ロックの罠** |
+| 03 | [時間と順序](lessons/03-time-and-ordering.md) | happens-before、論理時計、**LWW が捨てるもの** |
+| 04 | [整合性モデルと CAP](lessons/04-consistency-models.md) | linearizable / causal / eventual、PACELC |
+| 05 | [パーティショニング](lessons/05-partitioning.md) | レンジ/ハッシュ、ホットスポット、コンシステントハッシュ |
+| 06 | [キャッシュ戦略](lessons/06-caching.md) | cache-aside、無効化、stampede |
+| 07 | [合意とリーダー選出](lessons/07-consensus.md) | クォーラム、Raft、**分散ロックの罠** |
 
 ## 演習
 
@@ -59,10 +60,11 @@ Lamport は別のところでこうも書いています。
 |---|---|---|
 | [failure-modes](exercises/failure-modes/) | 01 | 「timeout は失敗ではなく結果不明」を型で表現する |
 | [replication-lag](exercises/replication-lag/) | 02 | lag の 3 異常を再現し、read-your-writes を実装する |
-| [consistency](exercises/consistency/) | 03 | 同じ状態で 3 モードが違う答えを返すことを示す |
-| [partitioning](exercises/partitioning/) | 04 | 3 方式のリバランス移動量を**実測**する |
-| [cache-stampede](exercises/cache-stampede/) | 05 | TTL 切れで DB へ流れる本数を数え、1 本に絞る |
-| [quorum](exercises/quorum/) | 06 | 全分断パターンを総当たりし、split-brain が起きないことを確認 |
+| [time-and-ordering](exercises/time-and-ordering/) | 03 | 因果と並行を判定し、LWW が消すデータを再現する |
+| [consistency](exercises/consistency/) | 04 | 同じ状態で 3 モードが違う答えを返すことを示す |
+| [partitioning](exercises/partitioning/) | 05 | 3 方式のリバランス移動量を**実測**する |
+| [cache-stampede](exercises/cache-stampede/) | 06 | TTL 切れで DB へ流れる本数を数え、1 本に絞る |
+| [quorum](exercises/quorum/) | 07 | 全分断パターンを総当たりし、split-brain が起きないことを確認 |
 
 ```bash
 cd exercises/partitioning
@@ -103,3 +105,5 @@ python3 measure.py                          # 実装後、移動量を実測す�
 - [ ] project の設計文書を書き、第三者のレビューを受けた
 - [ ] [客観的評価ガイド](../assessment/)に沿った証拠を提出した
 - [ ] [実技試験](assessment/)に合格した
+
+修了前に[Phase 11 実技試験](assessment/)へ進み、初見要件から設計、容量計算、障害時挙動をまとめて第三者レビューを受けてください。

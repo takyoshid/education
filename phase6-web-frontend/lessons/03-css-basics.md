@@ -277,54 +277,47 @@ button {
 }
 ```
 
-## 6. よく使う CSS プロパティ
+## 6. プロパティは覚えない、引く
+
+CSS のプロパティは数百あり、毎年増えます。**全部を覚えている人はいません。**必要なのは、「こういうことがしたい」から「どのプロパティか」へたどり着けることです。
+
+### 分類だけ覚える
+
+| やりたいこと | 見るべきプロパティ群 |
+|---|---|
+| 文字の見た目 | `font-*`、`line-height`、`letter-spacing`、`text-*` |
+| 背景 | `background-*` |
+| 枠と角 | `border-*`、`border-radius` |
+| 影・透明度 | `box-shadow`、`opacity` |
+| 位置と重なり | `position`、`top/right/bottom/left`、`z-index` |
+| 配置 | `display`、`flex-*`、`grid-*`(次のレッスン) |
+| 動き | `transition`、`transform`、`animation` |
+
+**分類が分かれば、あとは調べれば済みます。**信頼できる一次情報は MDN です。「CSS 中央揃え やり方」で出てきたブログより、MDN のリファレンスを読む習慣をつけてください。ブログは書かれた時点で止まりますが、リファレンスは更新されます。
+
+### 覚えておく価値のある例外
+
+分類で引ける知識と違い、**知らないと間違える**ものがいくつかあります。
 
 ```css
-/* テキスト */
 .text {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 1rem;      /* rem = root em = html のフォントサイズ基準 */
-  font-weight: 400;     /* 100〜900。bold = 700 */
-  line-height: 1.6;     /* 単位なし推奨(フォントサイズの倍率) */
-  letter-spacing: 0.05em;
-  text-align: left;
-  text-decoration: none;
-  white-space: nowrap;  /* テキストの折り返し禁止 */
+  /* rem は html のフォントサイズ基準。px で固定すると、
+     利用者がブラウザの文字サイズ設定を変えても効かない */
+  font-size: 1rem;
+
+  /* line-height は単位なしで書く。
+     単位を付けると子要素が親の「計算済みの値」を継承して崩れる */
+  line-height: 1.6;
+
+  /* 溢れたテキストを ... で省略する 3 点セット。
+     どれか 1 つでも欠けると効かない */
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* テキストが溢れたら ... で省略 */
-}
-
-/* 背景 */
-.bg {
-  background-color: #ffffff;
-  background-image: url("bg.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-/* ボーダー */
-.box {
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  border-top: none;
-}
-
-/* 影 */
-.card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 透明度 */
-.overlay {
-  opacity: 0.5;
-}
-
-/* カーソル */
-.clickable {
-  cursor: pointer;
+  text-overflow: ellipsis;
 }
 ```
+
+この 3 つは、**理屈を知らないと何時間も溶かす**類のものです。プロパティの一覧を暗記する時間があるなら、こういう地雷を知っておくほうが役に立ちます。
 
 ---
 

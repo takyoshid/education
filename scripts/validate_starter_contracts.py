@@ -23,6 +23,7 @@ STARTERS = (
     "phase11-distributed-systems/exercises/partitioning",
     "phase11-distributed-systems/exercises/quorum",
     "phase11-distributed-systems/exercises/replication-lag",
+    "phase11-distributed-systems/exercises/time-and-ordering",
     "longitudinal-project/starter/phase2",
 )
 

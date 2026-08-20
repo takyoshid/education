@@ -36,6 +36,7 @@ TARGETS = (
     Target("phase11/replication-lag", "phase11-distributed-systems/exercises/solutions/replication-lag/store.py", "phase11-distributed-systems/exercises/replication-lag/tests", "store.py"),
     Target("phase11/cache-stampede", "phase11-distributed-systems/exercises/solutions/cache-stampede/cache.py", "phase11-distributed-systems/exercises/cache-stampede/tests", "cache.py"),
     Target("phase11/partitioning", "phase11-distributed-systems/exercises/solutions/partitioning/partitioner.py", "phase11-distributed-systems/exercises/partitioning/tests", "partitioner.py"),
+    Target("phase11/time-and-ordering", "phase11-distributed-systems/exercises/solutions/time-and-ordering/clocks.py", "phase11-distributed-systems/exercises/time-and-ordering/tests", "clocks.py"),
 )
 
 

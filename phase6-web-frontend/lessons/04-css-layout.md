@@ -397,130 +397,69 @@ img {
 </picture>
 ```
 
-## 5. 実践: ページレイアウトの完全な例
+## 5. 実践: 骨組みだけ作る
+
+完成したページ全体をここに載せることはしません。**写経して動いても、次に自分で組むときに再現できないから**です。代わりに、どんなページでも共通する骨組みだけを示します。
 
 ```html
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>レスポンシブレイアウト</title>
-  <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --color-primary: #0066cc;
-      --color-bg: #f5f5f5;
-      --color-surface: #ffffff;
-      --spacing-sm: 8px;
-      --spacing-md: 16px;
-      --spacing-lg: 24px;
-    }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-      background-color: var(--color-bg);
-      color: #333;
-    }
-
-    /* ヘッダー */
-    .site-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--spacing-md) var(--spacing-lg);
-      background-color: var(--color-surface);
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    /* メインレイアウト */
-    .site-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: var(--spacing-lg);
-      gap: var(--spacing-lg);
-    }
-
-    @media (min-width: 768px) {
-      .site-layout {
-        grid-template-columns: 240px 1fr;
-      }
-    }
-
-    /* カードグリッド */
-    .card-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: var(--spacing-md);
-    }
-
-    @media (min-width: 600px) {
-      .card-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (min-width: 960px) {
-      .card-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    .card {
-      background: var(--color-surface);
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      overflow: hidden;
-    }
-
-    .card-body {
-      padding: var(--spacing-md);
-    }
-  </style>
-</head>
 <body>
-  <header class="site-header">
-    <a href="/" class="logo">MySite</a>
-    <nav>
-      <a href="/about">About</a>
-    </nav>
-  </header>
-
-  <div class="site-layout">
-    <aside>
-      <p>サイドバー</p>
-    </aside>
-    <main>
-      <div class="card-grid">
-        <article class="card">
-          <div class="card-body">
-            <h2>カード 1</h2>
-            <p>コンテンツ</p>
-          </div>
-        </article>
-        <article class="card">
-          <div class="card-body">
-            <h2>カード 2</h2>
-            <p>コンテンツ</p>
-          </div>
-        </article>
-        <article class="card">
-          <div class="card-body">
-            <h2>カード 3</h2>
-            <p>コンテンツ</p>
-          </div>
-        </article>
-      </div>
-    </main>
+  <header>ヘッダー</header>
+  <div class="layout">
+    <nav>サイドバー</nav>
+    <main>本文</main>
   </div>
+  <footer>フッター</footer>
 </body>
-</html>
 ```
+
+```css
+*, *::before, *::after {
+  box-sizing: border-box;   /* レッスン 03 の理由で最初に書く */
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;   /* 縦一列。ヘッダー・本体・フッター */
+}
+
+.layout {
+  flex: 1;                  /* 残りの高さを本体が占める。
+                               これでフッターが常に一番下に来る */
+  display: grid;
+  grid-template-columns: 240px 1fr;   /* サイドバーは固定、本文は残り全部 */
+  gap: 1.5rem;
+}
+
+/* 狭い画面では 1 列に積む */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+**この 30 行に、このレッスンの要点がすべて入っています。**
+
+- 外側の縦方向は Flexbox(一次元)
+- 内側の二次元の配置は Grid
+- `flex: 1` でフッターを最下部に固定する
+- 狭い画面では列を 1 つにする
+
+ここから先は、自分で肉付けしてください。[演習 02](../exercises/ex02-css-card.md)と[総仕上げプロジェクト](../project/)で、実際に組み立てます。
+
+### 確認すること
+
+作ったら必ず、**ブラウザの幅を手で狭めてください。** 320px まで縮めて、横スクロールが出ないことを確認します。これは Phase 6 の修了条件でもあります。
+
+横スクロールが出る原因は、ほぼ次のどれかです。
+
+| 原因 | 対処 |
+|---|---|
+| 固定幅の要素がある | `max-width: 100%` を付ける |
+| 長い URL やコードが折り返さない | `overflow-wrap: anywhere` |
+| 画像が縮まない | `img { max-width: 100%; height: auto; }` |
+| 表がはみ出す | 表を `overflow-x: auto` の箱に入れる |
 
 ---
 

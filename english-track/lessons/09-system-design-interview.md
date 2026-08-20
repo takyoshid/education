@@ -243,7 +243,7 @@ We can shard by the first character of the short URL code for even distribution.
 
 ### CAP 定理の話し方
 
-> CAP の正確な定義と、よくある誤用(「3つから2つを選ぶ」「CA システム」)については [Phase 11 Lesson 03](../../phase11-distributed-systems/lessons/03-consistency-models.md) を参照してください。面接では PACELC まで触れられると、実際に設計できる人だと伝わります。
+> CAP の正確な定義と、よくある誤用(「3つから2つを選ぶ」「CA システム」)については [Phase 11 Lesson 04](../../phase11-distributed-systems/lessons/04-consistency-models.md) を参照してください。面接では PACELC まで触れられると、実際に設計できる人だと伝わります。
 
 ```
 "In distributed systems, we often have to choose between consistency

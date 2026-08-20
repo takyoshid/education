@@ -1,4 +1,4 @@
-# Lesson 05: キャッシュ戦略 (Caching Strategies)
+# Lesson 06: キャッシュ戦略 (Caching Strategies)
 
 ## 学習目標
 

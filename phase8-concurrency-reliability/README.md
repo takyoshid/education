@@ -47,7 +47,8 @@ Web サービスでは、同じ処理が同時に走り、外部サービスが�
 | 03 | [async・timeout・cancellation](lessons/03-async-cancellation.md) | 予算としての timeout、TaskGroup、構造化並行性 |
 | 04 | [transaction と冪等性](lessons/04-transactions-idempotency.md) | 分離レベル、二将軍問題、idempotency key |
 | 05 | [retry・backoff・circuit breaker](lessons/05-retries-circuit-breakers.md) | retry storm、full jitter、時計の注入 |
-| 06 | [queue・配送保証・graceful shutdown](lessons/06-workers-shutdown.md) | at-least-once、DLQ、SIGTERM |
+| 06 | [背圧と負荷制御](lessons/06-backpressure.md) | 有界キュー、利用率と待ち時間、load shedding |
+| 07 | [queue・配送保証・graceful shutdown](lessons/07-workers-shutdown.md) | at-least-once、DLQ、SIGTERM |
 
 ## 演習
 
@@ -98,3 +99,5 @@ python3 -m unittest discover -s tests -v
 - [ ] project の公開テストと、自分で書いた障害注入テストが通る
 - [ ] [客観的評価ガイド](../assessment/)に沿った証拠を提出した
 - [ ] [実技試験](assessment/)に合格した
+
+修了前に[Phase 8 実技試験](assessment/)へ進み、初見状態から競合、重複配送、取消、停止を障害注入で再現・修正してください。

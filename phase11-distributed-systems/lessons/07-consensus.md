@@ -1,4 +1,4 @@
-# Lesson 06: 合意 (Consensus) とリーダー選出
+# Lesson 07: 合意 (Consensus) とリーダー選出
 
 ## 学習目標
 

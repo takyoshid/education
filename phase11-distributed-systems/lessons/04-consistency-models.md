@@ -1,4 +1,4 @@
-# Lesson 03: 整合性モデル (Consistency Models) と CAP
+# Lesson 04: 整合性モデル (Consistency Models) と CAP
 
 ## 学習目標
 
