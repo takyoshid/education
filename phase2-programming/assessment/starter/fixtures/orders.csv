@@ -1,0 +1,6 @@
+order_id,product,quantity,unit_price
+A-001,Book,2,12.30
+A-002,Pen,3,0.10
+A-002,Duplicate,1,1.00
+A-003,Invalid,0,5.00
+A-004,Pen,1,0.20

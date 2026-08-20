@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>天気アプリ</title>
+  <meta name="description" content="都市名を入力してリアルタイムの天気情報を確認できます。" />
+  <!-- API サーバは同じマシン上にあるので preconnect は要らない。
+       外部ドメインを相手にするときは、ここで接続を事前確立するとよい
+       (レッスン 12「リソースヒント」を参照)。 -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <span class="site-name">天気アプリ</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- 検索フォーム -->
+    <section aria-labelledby="search-heading">
+      <h1 id="search-heading" class="visually-hidden">都市の天気を検索</h1>
+      <form class="search-form" id="search-form" novalidate>
+        <label for="city-input" class="visually-hidden">都市名</label>
+        <input
+          type="text"
+          id="city-input"
+          class="search-input"
+          placeholder="都市名を入力(例: Tokyo、大阪)"
+          value="Tokyo"
+          required
+          autocomplete="off"
+          aria-describedby="search-hint"
+        />
+        <button type="submit" class="search-button">検索</button>
+        <span id="search-hint" class="visually-hidden">
+          都市名を英語または日本語で入力して Enter キーまたは検索ボタンを押してください。
+        </span>
+      </form>
+    </section>
+
+    <!-- 検索履歴 -->
+    <section id="history-section" aria-labelledby="history-heading" hidden>
+      <h2 id="history-heading" class="section-title">最近の検索</h2>
+      <ul id="history-list" class="history-list" aria-label="検索履歴"></ul>
+    </section>
+
+    <!-- ステータス / 結果 -->
+    <div
+      id="status"
+      class="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+
+    <div id="weather-result"></div>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      <small>
+        天気データ: 教材同梱の学習用サーバ(実在の観測値ではありません)
+      </small>
+    </p>
+  </footer>
+
+  <!-- ES Modules で読み込む -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>

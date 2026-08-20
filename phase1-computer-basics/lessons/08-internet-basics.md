@@ -263,29 +263,56 @@ HTTPS: データが暗号化される（盗み見られても読めない）
 
 ### curl コマンドで HTTP を体験
 
+ここでは `example.com` を相手にします。この名前は「文書の例に使うための住所」として国際的に予約されており(RFC 2606)、**誰かの持ち物になることも、消えることもありません。**練習の通信を実在の誰かのサーバへ送らずに済みます。
+
+まずはレスポンスヘッダだけを見ます。
+
 ```bash
-# GET リクエストを送る
-$ curl https://httpbin.org/get
-{
-  "headers": {
-    "Host": "httpbin.org",
-    "User-Agent": "curl/7.88.1"
-  },
-  "url": "https://httpbin.org/get"
-}
-
-# レスポンスヘッダも表示
-$ curl -I https://www.google.com
+$ curl -I https://example.com
 HTTP/2 200
-content-type: text/html; charset=ISO-8859-1
-date: Sat, 05 Jul 2024 10:00:00 GMT
-...
+content-type: text/html; charset=UTF-8
+content-length: 1256
+date: Mon, 01 Sep 2025 09:00:00 GMT
+```
 
-# POST リクエストを送る
-$ curl -X POST https://httpbin.org/post \
+`-I` は「本文はいらない、ヘッダだけくれ」という意味です。上の表で見たステータスコードとヘッダが、実際に返ってきています。
+
+次が重要です。`-v`(verbose)を付けると、**自分が何を送ったのか**が見えます。
+
+```bash
+$ curl -v https://example.com
+* Connected to example.com (93.184.215.14) port 443
+* TLS handshake, TLS 1.3 / AEAD-AES256-GCM-SHA384
+> GET / HTTP/2
+> Host: example.com
+> User-Agent: curl/8.4.0
+> Accept: */*
+>
+< HTTP/2 200
+< content-type: text/html; charset=UTF-8
+<
+<!doctype html>...
+```
+
+記号の意味は次のとおりです。
+
+| 記号 | 意味 |
+|---|---|
+| `*` | curl 自身の動作(名前解決、接続、TLS ハンドシェイク) |
+| `>` | **自分が送ったもの**(リクエスト) |
+| `<` | **相手が返したもの**(レスポンス) |
+
+この 1 コマンドの中に、このレッスンで学んだことがすべて入っています。`example.com` という名前が IP アドレスに変換され(DNS)、そのアドレスへ接続し、TLS で暗号化の合意をして、はじめて HTTP のやり取りが始まる。**ブラウザがアドレスバーに URL を入れたときに裏でやっていることと、同じ順序です。**
+
+POST でデータを送るときはこうします。
+
+```bash
+$ curl -v -X POST https://example.com \
   -H "Content-Type: application/json" \
   -d '{"name": "Alice", "age": 25}'
 ```
+
+`example.com` は POST を受け付けないのでエラーが返りますが、`>` の行を見れば **自分が送ったリクエストの形** は確認できます。いま知りたいのはそちらです。実際にデータを受け取って返すサーバは、Phase 6 で自分の手元に立てます。
 
 ---
 
@@ -361,7 +388,7 @@ https://api.example.com:8080/users/123?format=json#profile
 
 **Q3.** HTTP ステータスコード 404 と 500 の違いは何ですか？
 
-**Q4.** `curl https://httpbin.org/get` を実行したとき、何が起きますか？（DNS から HTTP レスポンスまでの流れを書いてください）
+**Q4.** `curl https://example.com` を実行したとき、何が起きますか？（DNS から HTTP レスポンスまでの流れを書いてください）
 
 **Q5.** なぜ HTTP ではなく HTTPS を使うべきなのですか？
 
@@ -387,13 +414,15 @@ DNS が「142.250.x.x です」と教えてくれる = 電話帳に「山田さ�
 - 500: サーバーエラー。サーバー側でプログラムのバグや設定ミスなどが発生している。クライアントのリクエストに問題はない
 
 **A4.**
-1. OS が `httpbin.org` の IP アドレスを DNS に問い合わせる
+1. OS が `example.com` の IP アドレスを DNS に問い合わせる
 2. DNS サーバーが IP アドレスを返す
 3. curl がその IP アドレスのポート 443 に TCP 接続する
 4. TLS ハンドシェイクで暗号化通信を確立する
-5. `GET /get HTTP/2` リクエストを送信する
-6. サーバーが `200 OK` とともに JSON レスポンスを返す
+5. `GET / HTTP/2` リクエストを送信する（`Host: example.com` ヘッダを含む）
+6. サーバーが `200 OK` とともに HTML レスポンスを返す
 7. curl が受け取った内容を画面に表示する
+
+`curl -v` を付ければ、この 1〜7 が実際に画面に流れます。
 
 **A5.**
 HTTP では通信内容が平文（暗号化なし）で送られるため、途中でデータを傍受された場合にパスワードやクレジットカード番号などの機密情報が読まれてしまう。HTTPS は通信を暗号化するため、傍受されてもデータが読めない。

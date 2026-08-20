@@ -40,3 +40,11 @@ build/
 
 # Cache
 .cache/
+
+# ローカルで生成されるデータベース(学習中に必ずできる)
+*.db
+*.sqlite
+*.sqlite3
+
+# ビルド成果物
+*.egg-info/

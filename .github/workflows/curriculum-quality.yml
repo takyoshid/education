@@ -1,0 +1,153 @@
+name: Curriculum quality
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  curriculum-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+      - name: Validate internal links and structure
+        run: ruby scripts/validate_curriculum.rb
+      - name: Validate declared versions
+        # 版の数字は最も早く腐る情報なので versions.md 1 枚に集めてある。
+        # 集めただけでは実物とずれたときに気づけないので、ここで突き合わせる。
+        run: python3 scripts/validate_versions.py
+      - name: Compile all Python examples
+        run: python -m compileall -q fixtures phase2-programming phase5-algorithms phase7-backend-db phase9-software-design phase10-infra-cloud phase8-concurrency-reliability phase11-distributed-systems longitudinal-project
+
+  fixtures:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 教材用 API サーバは依存ゼロで書いてある。
+        # その約束が守られていることを、複数の Python で確かめる。
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test the local API server
+        # 演習・プロジェクト・レッスンがこのサーバに依存している。
+        # ここが壊れると教材の広い範囲が同時に動かなくなるので、
+        # 依存を一切入れずに (pip install なしで) 実行できることも同時に検査している。
+        run: python -m unittest discover -s fixtures/tests -v
+
+  python-projects:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 学習者が今インストールする Python は最新版であることが多い。
+        # 固定した依存が新しい Python でホイールを持たず、
+        # 環境構築だけで詰まる事故を防ぐため、複数バージョンで検査する。
+        python-version: ["3.12", "3.13"]
+        directory:
+          - phase2-programming/project
+          - phase7-backend-db/project
+          - phase9-software-design/project/refactored
+          - phase10-infra-cloud/project
+        include:
+          - directory: phase2-programming/project
+            install: pip install -r requirements.txt
+          - directory: phase7-backend-db/project
+            install: pip install -r requirements.txt
+          - directory: phase9-software-design/project/refactored
+            install: pip install -r ../../../phase2-programming/project/requirements.txt
+          - directory: phase10-infra-cloud/project
+            install: pip install -r requirements.txt -r requirements-dev.txt
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install test dependencies
+        working-directory: ${{ matrix.directory }}
+        run: ${{ matrix.install }}
+      - name: Run tests
+        working-directory: ${{ matrix.directory }}
+        # -W error::DeprecationWarning は使わない(依存側の警告で落ちるため)。
+        # 代わりに教材側のコードが警告を出していないことを目視で保つ。
+        run: python -m pytest -q
+
+  starter-contracts:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Verify public tests fail at intentional stubs
+        run: python scripts/validate_starter_contracts.py
+
+  reference-implementations:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run public tests against reference implementations
+        run: python scripts/validate_reference_implementations.py
+
+  # フロントエンドは 2 通りの入れ方で検査する。目的が違うので両方要る。
+  #
+  #   pinned : package-lock.json のとおりに入れる。学習者が手元で再現する木と同じ。
+  #            ここが落ちたら「固定した木がもう入らない」ということ。
+  #   latest : ロックを無視して caret 範囲を解決し直す。
+  #            ここが落ちたら「依存側の変更で教材が腐り始めた」ということ。
+  #            学習者に届く前に気づくための検査なので、落ちても慌てなくてよい。
+  #
+  # Python 側(python-projects ジョブ)を複数バージョンで回しているのと同じ考え方。
+  # 詳細は phase10-infra-cloud/project/requirements.txt の冒頭コメントを参照。
+  frontend-builds:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        directory:
+          - phase6-web-frontend/project/stage2-react
+          - phase6-web-frontend/exercises/solutions/ex06-react-solution
+        resolution: [pinned, latest]
+    name: frontend (${{ matrix.resolution }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies (locked)
+        if: matrix.resolution == 'pinned'
+        working-directory: ${{ matrix.directory }}
+        # npm ci はロックのとおりに入らなければ失敗する。それが狙い。
+        run: npm ci --ignore-scripts
+      - name: Install dependencies (fresh resolution)
+        if: matrix.resolution == 'latest'
+        working-directory: ${{ matrix.directory }}
+        # --no-package-lock はロックを読まず、書き戻しもしない。
+        run: npm install --ignore-scripts --no-package-lock
+      - name: Build
+        working-directory: ${{ matrix.directory }}
+        run: npm run build
+      - name: Verify the lockfile was not modified
+        if: matrix.resolution == 'latest'
+        # latest 側でロックが書き換わっていたら、検査の前提が崩れている。
+        run: git diff --exit-code -- '**/package-lock.json'

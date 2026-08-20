@@ -25,7 +25,7 @@ Phase 2 を修了したとき、あなたは「コードを書ける人」から
 
 - **Phase 1 修了済み**であること
   - ターミナル操作(ファイル作成、ディレクトリ移動、パス概念)
-  - Git の基本(add / commit / push)
+  - Phase 0 で練習した Git の最小操作(init / status / add / commit / log)
   - Web の仕組みの概要(HTTP, ブラウザ, サーバー)
   - テキストエディタの操作(VS Code 推奨)
 
@@ -84,7 +84,7 @@ exercises/
   ex11_testing/
   ex12_style/
   solutions/
-    ex01_solutions.py / ex01_solutions.md
+    ex01_solutions.md / ex02_solutions.py など
     ...
 project/
   README.md        (仕様書)
@@ -130,10 +130,15 @@ project/
 - [ ] 各演習の「応用」問題を 80% 以上解いた
 - [ ] 総仕上げプロジェクト(家計簿 CLI)を完成させ、全テストが green になった
 - [ ] プロジェクトを Git リポジトリで管理し、README を書いた
+- [ ] [Phase 2 実技試験](assessment/)に合格した
 
 ---
 
 ## 学習の進め方
+
+このPhaseから、すべての演習とプロジェクトをGitで管理します。Phase 0で練習した `init / status / add / commit / log` の最小セットを使い、意味のある変更ごとに履歴を残してください。ブランチ、GitHubへの`push`、Pull Request、復旧操作はPhase 3で学びます。また、通常プロジェクトと並行して [Phase横断プロジェクト](../longitudinal-project/) の `v0.2` に着手してください。
+
+通常演習とプロジェクトの後、[Phase 2 実技試験](assessment/)を解答・AIなしで受験します。公開テストへの合格だけでなく、自分で境界値を追加し、保存失敗時の安全性を説明できることが修了条件です。
 
 1. レッスンを読む前に「今日は何を学ぶか」を声に出して確認する
 2. コード例は必ず**自分で打ち込んで**実行する(コピペ禁止)

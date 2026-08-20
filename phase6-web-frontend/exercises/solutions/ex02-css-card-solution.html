@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>カードレイアウト — 模範解答</title>
+  <style>
+    /* ===== CSS カスタムプロパティ(レベル 3) ===== */
+    :root {
+      --color-primary:    #0066cc;
+      --color-surface:    #ffffff;
+      --color-bg:         #f5f7fa;
+      --color-text:       #1a1a1a;
+      --color-text-sub:   #555555;
+      --color-border:     #e0e0e0;
+      --radius-card:      12px;
+      --shadow-card:      0 2px 8px rgba(0, 0, 0, 0.08);
+      --shadow-card-hover:0 8px 24px rgba(0, 0, 0, 0.14);
+      --transition-base:  200ms ease;
+    }
+
+    /* ダークモード対応(レベル 3) */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-surface:  #1e1e2e;
+        --color-bg:       #13131f;
+        --color-text:     #e0e0f0;
+        --color-text-sub: #9090b0;
+        --color-border:   #2a2a40;
+        --shadow-card:    0 2px 8px rgba(0, 0, 0, 0.4);
+        --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    /* ===== リセット & ベース ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      padding: 40px 16px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 1.6rem;
+    }
+
+    /* ===== コンテナ ===== */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ===== カードリスト — CSS Grid(レベル 2) ===== */
+    .card-list {
+      display: grid;
+      /*
+        auto-fill + minmax:
+        - 最小 280px、空きがあれば 1fr まで伸びる列を自動生成する
+        - コンテナ幅が 280*n + gap*(n-1) を下回ると列数が自動的に減る
+        - メディアクエリ不要でレスポンシブになる
+      */
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    /* ===== カード ===== */
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      /* 縦方向の Flexbox でボタンを下端に揃える(レベル 1) */
+      display: flex;
+      flex-direction: column;
+      /* ホバーアニメーション(レベル 3) */
+      transition:
+        transform var(--transition-base),
+        box-shadow var(--transition-base);
+    }
+
+    /* ホバー時: 上に浮き上がる効果 */
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card-hover);
+    }
+
+    /* アニメーションを好まないユーザーへの配慮(レベル 3) */
+    @media (prefers-reduced-motion: reduce) {
+      .card {
+        transition: none;
+      }
+      .card:hover {
+        transform: none;
+      }
+    }
+
+    /* 画像 — アスペクト比を固定して CLS を防ぐ(レベル 2) */
+    .card-image {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* カード本体(縦方向 Flex: テキストが余白を埋め、リンクを下端に押し下げる) */
+    .card-body {
+      padding: 16px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: var(--color-text);
+    }
+
+    .card-text {
+      font-size: 0.9rem;
+      color: var(--color-text-sub);
+      line-height: 1.6;
+      flex: 1;           /* テキストエリアが残りの高さを吸収する */
+      margin-bottom: 16px;
+    }
+
+    /* リンクボタン */
+    .card-link {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 8px 18px;
+      background: var(--color-primary);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      transition: background var(--transition-base);
+    }
+    .card-link:hover { background: #0052a3; }
+    .card-link:focus-visible {
+      outline: 3px solid var(--color-primary);
+      outline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h1>カードレイアウト</h1>
+
+  <main class="container">
+    <div class="card-list">
+
+      <article class="card">
+        <img
+          src="http://127.0.0.1:8787/photos/1/800/450"
+          alt="山の風景"
+          class="card-image"
+          width="800"
+          height="450"
+          loading="lazy"
+        />
+        <div class="card-body">
+          <h2 class="card-title">カード 1: 短い説明</h2>
+          <p class="card-text">短い説明文です。</p>
+          <a href="#" class="card-link">詳細を見る</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <img
+          src="http://127.0.0.1:8787/photos/2/800/450"
+          alt="海の風景"
+          class="card-image"
+          width="800"
+          height="450"
+          loading="lazy"
+        />
+        <div class="card-body">
+          <h2 class="card-title">カード 2: 中程度の説明</h2>
+          <p class="card-text">
+            説明文が複数行にわたる場合でも、カードの高さが揃い、
+            「詳細を見る」ボタンが常に下端に配置されます。
+            Flexbox の <code>flex: 1</code> を使って実現しています。
+          </p>
+          <a href="#" class="card-link">詳細を見る</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <img
+          src="http://127.0.0.1:8787/photos/3/800/450"
+          alt="森の風景"
+          class="card-image"
+          width="800"
+          height="450"
+          loading="lazy"
+        />
+        <div class="card-body">
+          <h2 class="card-title">カード 3: 長い説明文</h2>
+          <p class="card-text">
+            このカードは説明文がとても長くなっています。
+            それでもレイアウトが崩れず、ボタンが下端に揃うことを確認してください。
+            CSS Grid の auto-fill と minmax により、
+            画面幅に応じて列数が自動的に変化するレスポンシブデザインが実現されています。
+            画像は aspect-ratio で比率を固定しているため、
+            読み込み前後でレイアウトがずれる CLS も防止できています。
+          </p>
+          <a href="#" class="card-link">詳細を見る</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <img
+          src="http://127.0.0.1:8787/photos/4/800/450"
+          alt="都市の風景"
+          class="card-image"
+          width="800"
+          height="450"
+          loading="lazy"
+        />
+        <div class="card-body">
+          <h2 class="card-title">カード 4: 4 枚目</h2>
+          <p class="card-text">4 枚以上あっても Grid が自動的に次の行に折り返します。</p>
+          <a href="#" class="card-link">詳細を見る</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <img
+          src="http://127.0.0.1:8787/photos/5/800/450"
+          alt="砂漠の風景"
+          class="card-image"
+          width="800"
+          height="450"
+          loading="lazy"
+        />
+        <div class="card-body">
+          <h2 class="card-title">カード 5: 5 枚目</h2>
+          <p class="card-text">ダークモードにも対応しています。OS のダークモードを切り替えて確認してみてください。</p>
+          <a href="#" class="card-link">詳細を見る</a>
+        </div>
+      </article>
+
+    </div>
+  </main>
+</body>
+</html>
