@@ -1,11 +1,13 @@
-# Lesson 06: CI/CD（GitHub Actions）
+# Lesson 06: CI/CD
 
 ## 学習目標
 
 - CI（継続的インテグレーション）と CD（継続的デリバリー/デプロイ）の概念を理解する
-- GitHub Actions の workflow / job / step 構造を理解する
-- lint → test → build → deploy のパイプラインを構築できる
-- シークレットを安全に扱える
+- パイプラインを「関門の列」として設計できる
+- 秘密情報を安全に扱う原則を説明できる
+- 自動化の結果が再現可能である条件を説明できる
+
+具体的な記法(GitHub Actions)は [付録: GitHub Actions の書き方](../appendix/06-github-actions.md) にあります。**先にこの本文を読んでください。**記法だけ写すと、動くけれど直せないパイプラインができます。
 
 ---
 
@@ -28,6 +30,18 @@
 → 小さな問題を早期に発見・修正できる
 ```
 
+### 本当の効果は「速さ」ではなく「小ささ」
+
+CI の価値は、テストが自動で走ることそのものではありません。**変更を小さく保てるようになること**です。
+
+統合が痛いと、人は統合を先延ばしにします。先延ばしにすると変更が大きくなり、大きくなるとさらに痛くなります。この悪循環を断ち切るのが CI です。
+
+```
+統合が痛い → 後回しにする → 変更が大きくなる → もっと痛い → もっと後回し
+```
+
+自動化はこの輪の一箇所を切るための道具であって、目的ではありません。
+
 ### CD（Continuous Delivery / Deployment）
 
 - **Continuous Delivery（継続的デリバリー）**: 本番環境への**デプロイ準備**を自動化。デプロイ実行は人が判断する。
@@ -38,374 +52,113 @@ CI: コード変更 → ビルド → テスト → [OK/NG を通知]
 CD: [CI 合格] → ステージング環境へデプロイ → [承認] → 本番へデプロイ
 ```
 
----
-
-## 2. GitHub Actions の概念
-
-### 主要な構成要素
-
-```
-Workflow（ワークフロー）
-└── .github/workflows/ci.yml などに定義
-    └── 1つ以上の Job（ジョブ）
-        └── 1つ以上の Step（ステップ）
-            └── 各 Step が Action または Shell コマンドを実行
-```
-
-### トリガー（イベント）
-
-ワークフローを起動するイベントを定義します。
-
-```yaml
-on:
-  push:
-    branches: [main, develop]     # 特定ブランチへの push
-  pull_request:
-    branches: [main]               # main への PR
-  schedule:
-    - cron: '0 9 * * 1'           # 毎週月曜 9:00 UTC に実行
-  workflow_dispatch:               # 手動実行ボタン
-```
-
-### Jobs と Runner
-
-```yaml
-jobs:
-  test:
-    runs-on: ubuntu-latest    # 実行環境（GitHub が管理する VM）
-    steps:
-      - ...
-
-  build:
-    runs-on: ubuntu-latest
-    needs: test               # test ジョブ完了後に実行
-    steps:
-      - ...
-```
-
-**runs-on に使えるランナー**:
-- `ubuntu-latest`（Ubuntu 最新版、無料）
-- `ubuntu-22.04`（Ubuntu 22.04 固定）
-- `macos-latest`（macOS、一部有料）
-- `windows-latest`（Windows、一部有料）
-
-GitHub 無料プランでは **パブリックリポジトリは無制限**、
-プライベートリポジトリは月 2,000 分まで無料です。
+この 2 つの違いは技術ではなく、**「人間の承認をどこに置くか」という判断**です。取り返しのつきやすさで決めます。切り戻しが数秒でできるなら自動でよく、データの移行を伴うなら人が見るべきです。
 
 ---
 
-## 3. 基本的なワークフロー構文
+## 2. パイプラインは「関門の列」
 
-### よく使うアクション（Action）
+CI/CD のパイプラインは、変更が本番に届くまでに通る**関門の列**です。
 
-```yaml
-steps:
-  # リポジトリのコードをチェックアウト（ほぼ必須）
-  - uses: actions/checkout@v4
-
-  # Node.js をセットアップ
-  - uses: actions/setup-node@v4
-    with:
-      node-version: '20'
-      cache: 'npm'   # npm キャッシュを有効化
-
-  # Docker Buildx をセットアップ
-  - uses: docker/setup-buildx-action@v3
-
-  # Docker Hub にログイン
-  - uses: docker/login-action@v3
-    with:
-      username: ${{ secrets.DOCKERHUB_USERNAME }}
-      password: ${{ secrets.DOCKERHUB_TOKEN }}
+```
+コード変更
+   ↓
+[書式・静的解析]  ← 速い。1 秒で落ちる問題をここで落とす
+   ↓
+[単体テスト]      ← 速い。ロジックの誤りを捕まえる
+   ↓
+[結合テスト]      ← 遅い。部品同士の噛み合わせを見る
+   ↓
+[ビルド]          ← 成果物ができることを確かめる
+   ↓
+[デプロイ]        ← 本番に出す
 ```
 
-### シェルコマンドの実行
+### 並べる順序には理由がある
 
-```yaml
-steps:
-  - name: 依存関係をインストール
-    run: npm ci
+**速くて落ちやすいものを先に置きます。** 30 分かかる結合テストを走らせた後で、書式の誤りで落ちるのは時間の無駄です。
 
-  - name: 複数行のコマンドを実行
-    run: |
-      echo "テスト開始"
-      npm run lint
-      npm run test
-      echo "テスト完了"
+これは「速い失敗(fail fast)」という考え方で、CI に限らず設計全般に効きます。入力の検証を関数の先頭で行うのも、同じ理由です。
 
-  - name: 環境変数を使う
-    run: echo "ブランチ名: ${{ github.ref_name }}"
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-```
+### 何を関門にするかは「戻れなさ」で決まる
 
-### 条件分岐
-
-```yaml
-steps:
-  - name: 本番デプロイ（main ブランチのみ）
-    if: github.ref == 'refs/heads/main'
-    run: ./deploy.sh
-
-  - name: 前のステップが失敗してもログを出力
-    if: failure()
-    run: cat /tmp/error.log
-```
+| 段階 | 失敗したときのコスト | だから |
+|---|---|---|
+| 静的解析 | 数秒。直して再実行 | 厳しくしてよい |
+| テスト | 数分 | 自動で止める |
+| 本番デプロイ | 利用者に影響が出る | 段階的に出す、いつでも戻せるようにする |
 
 ---
 
-## 4. 実践: Node.js プロジェクトの CI/CD パイプライン
+## 3. どの CI サービスでも同じもの
 
-### ファイル構成
+サービスごとに記法は違いますが、**構成要素は共通です。**
 
-```
-.github/
-└── workflows/
-    ├── ci.yml      # PR 時の CI（lint + test + build）
-    └── cd.yml      # main マージ時の CD（Docker Hub にプッシュ）
-```
+| 概念 | 役割 | GitHub Actions での呼び名 |
+|---|---|---|
+| トリガー | 何が起きたら動くか | `on:` |
+| ジョブ | 独立して並列に走る単位 | `jobs:` |
+| ステップ | ジョブの中の順番に走る処理 | `steps:` |
+| 実行環境 | どこで走らせるか | `runs-on:` |
+| 依存 | 順序の指定 | `needs:` |
+| 秘密情報 | 外から注入する認証情報 | `secrets` |
+| 成果物 | ジョブ間・実行後に残すファイル | artifact |
+| キャッシュ | 再利用して速くするもの | `cache` |
 
-### CI ワークフロー（ci.yml）
-
-```yaml
-# .github/workflows/ci.yml
-name: CI
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
-
-jobs:
-  lint-and-test:
-    name: Lint & Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: コードをチェックアウト
-        uses: actions/checkout@v4
-
-      - name: Node.js をセットアップ
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: 依存関係をインストール
-        run: npm ci
-
-      - name: Lint を実行
-        run: npm run lint
-
-      - name: 型チェック（TypeScript の場合）
-        run: npm run type-check
-
-      - name: テストを実行（カバレッジ付き）
-        run: npm run test -- --coverage
-        env:
-          NODE_ENV: test
-
-      - name: カバレッジレポートをアップロード
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: coverage/
-          retention-days: 7
-
-  build:
-    name: Docker ビルド確認
-    runs-on: ubuntu-latest
-    needs: lint-and-test
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Docker Buildx をセットアップ
-        uses: docker/setup-buildx-action@v3
-
-      - name: Docker イメージをビルド（プッシュはしない）
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: false
-          tags: myapp:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-```
-
-### CD ワークフロー（cd.yml）
-
-```yaml
-# .github/workflows/cd.yml
-name: CD
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  build-and-push:
-    name: Docker イメージをビルド & プッシュ
-    runs-on: ubuntu-latest
-
-    outputs:
-      image-tag: ${{ steps.meta.outputs.tags }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Docker メタデータを生成
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/myapp
-          tags: |
-            type=sha,prefix=sha-
-            type=ref,event=branch
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Docker Buildx をセットアップ
-        uses: docker/setup-buildx-action@v3
-
-      - name: Docker Hub にログイン
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: ビルド & プッシュ
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  deploy:
-    name: デプロイ
-    runs-on: ubuntu-latest
-    needs: build-and-push
-    environment: production   # GitHub Environment で承認フローを設定可能
-
-    steps:
-      - name: サーバーにデプロイ（SSH 経由）
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/myapp
-            docker compose pull
-            docker compose up -d --no-deps app
-            docker image prune -f
-```
+**左の列は変わりません。右の列は変わります。**新しい CI に移るときは、左の列で対応表を作れば移行できます。
 
 ---
 
-## 5. シークレットの管理
+## 4. 秘密情報の扱い
 
-### GitHub Secrets の設定
+### 原則
 
-1. リポジトリ → Settings → Secrets and variables → Actions
-2. "New repository secret" をクリック
-3. Name と Value を入力
+| 原則 | 理由 |
+|---|---|
+| **コードに書かない** | リポジトリは複製され、履歴は残る。一度入れたら消えない |
+| **実行時に外から注入する** | 誰が渡すかを一箇所で管理できる |
+| **出力しない** | ログは長く残り、広く共有される |
+| **権限を絞る** | 漏れたときの被害範囲を、あらかじめ小さくしておく |
+| **失効させられるようにする** | 漏れは起きる。起きたとき止められるかが分かれ目 |
 
-```
-DOCKERHUB_USERNAME: あなたの Docker Hub ユーザー名
-DOCKERHUB_TOKEN:    Docker Hub のアクセストークン（パスワードではなく）
-DEPLOY_HOST:        デプロイ先サーバーの IP アドレス
-DEPLOY_USER:        SSH ユーザー名
-DEPLOY_SSH_KEY:     SSH 秘密鍵の内容（-----BEGIN ... -----END-----）
-DATABASE_URL:       本番 DB の接続文字列
-```
+### なぜコードに書いてはいけないのか
 
-### ワークフローでのシークレットの使い方
+「あとで消せばいい」は通用しません。**Git は履歴を保持する道具**なので、コミットして push した時点で、その値は履歴の中に残ります。あとのコミットで消しても、履歴を遡れば読めます。
 
-```yaml
-steps:
-  - name: 環境変数として使う
-    run: deploy.sh
-    env:
-      API_KEY: ${{ secrets.API_KEY }}
+さらに、公開リポジトリに置かれた認証情報は**自動的に探し回る仕組みによって数分で発見されます。**「小さなリポジトリだから誰も見ない」という想定は成り立ちません。
 
-  - name: アクションのパラメータとして使う
-    uses: some-action@v1
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}  # 自動で付与される特別なトークン
-```
+漏らしてしまった場合、正しい対応は履歴を書き換えることではなく、**その認証情報を失効させること**です。履歴の書き換えは複製された分には届きません。
 
-**注意**: シークレットはログに出力されても `***` にマスクされます。
-ただし、意図的にマスクを外す操作（echo をデコードするなど）は避けてください。
+### マスクは防御ではない
+
+多くの CI は、登録した秘密情報がログに出たとき自動的に `***` へ置き換えます。ただしこれは**保険であって防御ではありません。**値を加工して出力すればすり抜けます。
+
+対策は「出力しても大丈夫にすること」ではなく、**出力しないこと**です。
 
 ---
 
-## 6. マトリクスビルド（複数環境でのテスト）
+## 5. 再現性
 
-複数の OS・Node.js バージョンでテストを並列実行できます。
+CI が信用できるのは、**同じ入力から同じ結果が出るとき**だけです。実行のたびに結果が変わるパイプラインは、テストとして機能しません。
 
-```yaml
-jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-        node-version: ['18', '20', '22']
-      fail-fast: false   # 1つ失敗しても他を続行
+| やること | やらないこと | なぜ |
+|---|---|---|
+| ロックファイルから正確に入れる | 毎回最新を取りに行く | 依存が勝手に上がると、コードを変えていないのに落ちる |
+| ツールの版を固定する | 「最新」を指定したまま放置 | 相手の変更で、ある日突然壊れる |
+| ネットワークへの依存を減らす | 外部サービスを毎回叩く | 相手が落ちたら自分も落ちる |
+| キャッシュのキーにロックファイルを含める | 固定キーで使い回す | 古い依存を掴んだまま「なぜか通る」事故が起きる |
 
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm test
-```
+**「昨日は通ったのに今日落ちた。コードは変えていない」**という状況は、ほぼ必ずこの表のどれかが原因です。
+
+なお、あえて「最新」で動かす検査を**別に**持つのは有効です。この教材の CI が複数の Python 版で検査しているのは、学習者が入れる版が最新であることが多いからです。固定して再現性を守る検査と、最新に追随して腐りを早期発見する検査は、目的が違うので両方あってよいものです。
 
 ---
 
-## 7. キャッシュで高速化
+## 6. 複数の環境で検査する
 
-```yaml
-steps:
-  # Node.js の依存関係をキャッシュ
-  - uses: actions/setup-node@v4
-    with:
-      node-version: '20'
-      cache: 'npm'   # package-lock.json をキーに自動キャッシュ
+同じコードを、複数の OS や言語バージョンの組み合わせで並列に走らせられます(マトリクスビルド)。
 
-  # 手動でキャッシュを制御する場合
-  - name: キャッシュを復元
-    uses: actions/cache@v4
-    with:
-      path: ~/.npm
-      key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      restore-keys: |
-        npm-${{ runner.os }}-
-```
-
----
-
-## 8. ワークフローのデバッグ
-
-```yaml
-# デバッグログを有効化（Secrets に ACTIONS_STEP_DEBUG=true を設定）
-
-steps:
-  - name: コンテキスト情報を確認
-    run: |
-      echo "ブランチ: ${{ github.ref }}"
-      echo "コミット SHA: ${{ github.sha }}"
-      echo "イベント: ${{ github.event_name }}"
-      echo "ランナー OS: ${{ runner.os }}"
-
-  - name: 環境変数をデバッグ出力
-    run: env | sort
-```
+重要なのは設定方法ではなく、**失敗したときに切り分けられること**です。1 つの環境だけで失敗したのか、全部で失敗したのか。この区別が原因究明の第一歩なので、**最初の失敗で残りを打ち切らない設定にしておきます。**
 
 ---
 
@@ -427,12 +180,12 @@ steps:
 
 | 概念 | 要点 |
 |------|------|
-| CI | コード変更のたびに自動でビルド・テスト。問題の早期発見 |
-| CD | テスト合格後に自動でデプロイ準備・デプロイ |
-| Workflow | YAML で定義。trigger → jobs → steps の構造 |
-| Secrets | リポジトリ設定で管理。コードには書かない |
-| キャッシュ | 依存関係をキャッシュして実行時間を短縮 |
-| マトリクス | 複数環境の並列テストが容易 |
+| CI | 変更のたびに自動で検査。本当の効果は変更を小さく保てること |
+| CD | 検査に通ったものを届ける。人の承認をどこに置くかは戻れなさで決める |
+| パイプライン | 関門の列。速くて落ちやすいものを先に置く |
+| 構成要素 | トリガー・ジョブ・ステップ・秘密情報。名前は変わるが役割は変わらない |
+| 秘密情報 | コードに書かない。出力しない。漏れたら失効させる |
+| 再現性 | 同じ入力から同じ結果。これが崩れると検査として無意味になる |
 
 ---
 
@@ -440,18 +193,23 @@ steps:
 
 1. CI と CD の違いを説明してください。
 
-2. GitHub Actions の workflow / job / step の関係を図示して説明してください。
+2. CI の本当の効果は「テストが自動で走ること」ではないと本文にあります。では何ですか。
 
-3. `needs` キーワードの役割を説明し、使うべき場面を挙げてください。
+3. パイプラインで、静的解析を結合テストより前に置くのはなぜですか。
 
-4. GitHub Secrets を使う理由を説明してください。なぜコード中に API キーを直接書いてはいけないのですか？
+4. 継続的デリバリーと継続的デプロイのどちらを選ぶかは、何で決まりますか。
 
-5. 以下の要件を満たす GitHub Actions ワークフローを書いてください：
+5. 秘密情報をコードに書いてはいけない理由を説明してください。誤って push した場合、まず何をすべきですか。
+
+6. 「コードを変えていないのに、昨日は通った CI が今日落ちた」。考えられる原因を 3 つ挙げてください。
+
+7. 複数環境でのテストで「最初の失敗で残りを打ち切らない」設定を推奨するのはなぜですか。
+
+8. 次の要件を満たすワークフローを書いてください(記法は[付録](../appendix/06-github-actions.md)を参照)。
    - PR 時に実行
-   - Python 3.11 をセットアップ
+   - Python をセットアップ
    - `pip install -r requirements.txt` を実行
-   - `flake8` で lint を実行
-   - `pytest` でテストを実行
+   - lint とテストを実行
 
 ---
 

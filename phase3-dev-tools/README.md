@@ -62,7 +62,7 @@ phase3-dev-tools/
 │   ├── 05-team-workflow.md      # チーム開発フロー・コードレビュー・Conventional Commits
 │   ├── 06-undo-and-rescue.md    # やり直しと救出(restore/reset/revert/stash/reflog)
 │   ├── 07-practical-tools.md    # 実務ツール(.gitignore/README/Markdown/ライセンス)
-│   └── 08-vscode-mastery.md     # VS Code 習熟(ショートカット・マルチカーソル・デバッガ)
+│   └── 08-editor-mastery.md     # エディタを使いこなす(言語サーバ・名前変更・デバッガ)
 ├── exercises/
 │   ├── ex01-first-commit.md     # 演習1: 初めてのコミット
 │   ├── ex02-branch-workflow.md  # 演習2: ブランチワークフロー
@@ -154,6 +154,20 @@ git log --oneline
 ### 総仕上げ
 
 - [ ] 総仕上げプロジェクト(`project/team-sim-project.md`)を完走できる
+- [ ] [Phase 3 実技試験](assessment/)に合格し、第三者レビューを受けた
+
+---
+
+
+## 付録について
+
+`appendix/` には、**特定の製品の手順**を分けて置いてあります。
+
+レッスン本文には、製品が入れ替わっても変わらない考え方だけを残しました。画面の操作・インストール手順・製品名は付録にあります。**付録が実物と合わなくなっていたら、公式ドキュメントを見て付録のほうを直してください。**本文を疑う必要はありません。
+
+| 付録 | 対応するレッスン |
+|---|---|
+| [08-vscode.md](appendix/08-vscode.md) | [08-editor-mastery.md](lessons/08-editor-mastery.md) |
 
 ---
 
@@ -163,6 +177,7 @@ git log --oneline
 2. 各レッスン末尾の「確認問題」に答え、自分の理解を確認してください。
 3. 演習(`exercises/`)に取り組み、詰まったら解説付き模範解答(`exercises/solutions/`)を参照してください。
 4. すべてのレッスンと演習が終わったら、総仕上げプロジェクトに挑戦してください。
+5. 最後に[Phase 3 実技試験](assessment/)でコンフリクト解消、PR、レビュー対応、復旧を実践してください。
 
 ---
 

@@ -75,20 +75,29 @@
 
 ---
 
+
+## 付録について
+
+`appendix/` には、**特定の製品の手順**を分けて置いてあります。
+
+レッスン本文には、製品が入れ替わっても変わらない考え方だけを残しました。画面の操作・インストール手順・製品名は付録にあります。**付録が実物と合わなくなっていたら、公式ドキュメントを見て付録のほうを直してください。**本文を疑う必要はありません。
+
+| 付録 | 対応するレッスン |
+|---|---|
+| [05-aws-hands-on.md](appendix/05-aws-hands-on.md) | [05-cloud-basics.md](lessons/05-cloud-basics.md) |
+| [06-github-actions.md](appendix/06-github-actions.md) | [06-cicd.md](lessons/06-cicd.md) |
+
+---
+
 ## 演習一覧
 
 | ファイル | 内容 |
 |----------|------|
-| exercises/01-network-basics.md | TCP ハンドシェイクの観察・curl で TLS を確認 |
-| exercises/02-linux-server.md | systemd サービスの作成・ログ調査 |
-| exercises/03-dockerfile.md | Node.js アプリの Dockerfile 作成 |
-| exercises/04-compose.md | アプリ + PostgreSQL の Compose 構成 |
-| exercises/05-cloud-setup.md | AWS 無料枠でサーバーを立ち上げる |
-| exercises/06-github-actions.md | CI/CD パイプラインの構築 |
-| exercises/07-observability.md | ログ収集・Prometheus + Grafana のセットアップ |
-| exercises/08-security.md | シークレット管理・HTTPS 化の実装 |
-| exercises/09-performance.md | Redis キャッシュの導入・負荷テスト |
-| exercises/10-incident.md | 障害シナリオのロールプレイ・ポストモーテム作成 |
+| exercises/ex01-network-investigation.md | DNS・TLS・HTTP を実際に観察する |
+| exercises/ex02-dockerfile.md | アプリの Dockerfile を書く |
+| exercises/ex03-compose.md | アプリ + PostgreSQL の Compose 構成 |
+| exercises/ex04-github-actions.md | CI/CD パイプラインの構築 |
+| exercises/ex05-security-check.md | シークレット管理と設定の点検 |
 
 ---
 
@@ -128,6 +137,7 @@ Docker 化 → CI/CD 構築 → クラウドデプロイまでを一貫して実
 - [ ] 環境変数をコード中にハードコードせず、シークレット管理できる
 - [ ] Let's Encrypt などで HTTPS 化を実施できる（またはローカルで mkcert を使える）
 - [ ] 総仕上げプロジェクトを完成させ、動作確認できる
+- [ ] [Phase 10 実技試験](assessment/)に合格した
 
 ---
 

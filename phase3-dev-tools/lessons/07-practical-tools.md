@@ -399,4 +399,4 @@ git push origin --tags  # すべてのタグを push
 ---
 
 前のレッスン: [レッスン 06: やり直しと救出](./06-undo-and-rescue.md)
-次のレッスン: [レッスン 08: VS Code 習熟](./08-vscode-mastery.md)
+次のレッスン: [レッスン 08: エディタを使いこなす](./08-editor-mastery.md)
