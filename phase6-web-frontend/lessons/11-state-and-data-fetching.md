@@ -783,4 +783,4 @@ const fullName = `${firstName} ${lastName}`;
 
 ---
 
-次のレッスン: [12-performance-seo.md](12-performance-seo.md)
+次のレッスン: [12-frontend-testing.md](12-frontend-testing.md)

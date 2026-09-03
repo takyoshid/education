@@ -147,11 +147,18 @@ npm init -y
     "axios": "^1.6.0"
   },
   "devDependencies": {
-    "vite": "^5.0.0",
-    "typescript": "^5.3.0"
+    "vite": "^6.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.0.0"
   }
 }
 ```
+
+> **`scripts` に書いたコマンドは、`devDependencies` に入っていないと動きません。**
+>
+> 上の例で `"test": "vitest"` が動くのは、`devDependencies` に `vitest` があるからです。
+> スクリプトだけ書いて依存を入れ忘れると、`npm test` が「コマンドが見つからない」で失敗します。
+> **非常に多い間違いです。**
 
 ### 主要なコマンド
 

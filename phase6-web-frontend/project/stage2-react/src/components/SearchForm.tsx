@@ -23,7 +23,32 @@ export function SearchForm({ query, onQueryChange, onSearch, loading }: SearchFo
       style={{ display: "flex", gap: 10, marginBottom: 24 }}
       aria-label="天気検索フォーム"
     >
-      <label htmlFor="city-input" style={{ display: "none" }}>都市名</label>
+      {/*
+        ラベルを見た目から隠しつつ、支援技術には読ませる。
+
+        `display: none` や `visibility: hidden` では **スクリーンリーダーからも
+        消えます。** 見えないだけで「そこにある」状態にするには、
+        1px の領域に押し込んで切り抜く、この書き方を使います。
+
+        「ラベルはあるのに読み上げられない」は非常に多い不具合で、
+        見た目では気づけません。
+      */}
+      <label
+        htmlFor="city-input"
+        style={{
+          position: "absolute",
+          width: 1,
+          height: 1,
+          padding: 0,
+          margin: -1,
+          overflow: "hidden",
+          clip: "rect(0 0 0 0)",
+          whiteSpace: "nowrap",
+          border: 0,
+        }}
+      >
+        都市名
+      </label>
       <input
         id="city-input"
         type="text"

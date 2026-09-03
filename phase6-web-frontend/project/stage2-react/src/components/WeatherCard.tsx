@@ -53,12 +53,24 @@ export function WeatherCard({ location, weather }: WeatherCardProps) {
         marginBottom: 20,
       }}
     >
-      <p
+      {/*
+        このカードの見出しなので、見た目だけ大きい `<p>` ではなく `<h2>` にする。
+
+        太字で大きい文字は、目で見れば見出しに見えます。しかし支援技術に
+        とっては、ただの段落です。**見出しの一覧から辿れず、飛ばして読めません。**
+        レッスン 02(HTML セマンティクス)で扱った話が、そのまま現れる箇所です。
+      */}
+      <h2
         id="weather-location"
-        style={{ fontSize: "1.3rem", fontWeight: "bold", marginBottom: 4 }}
+        style={{
+          fontSize: "1.3rem",
+          fontWeight: "bold",
+          marginBottom: 4,
+          marginTop: 0,
+        }}
       >
         {location.name}, {location.country}
-      </p>
+      </h2>
       <p style={{ fontSize: "0.85rem", color: "#777", marginBottom: 20 }}>
         更新: {updatedTime}
       </p>

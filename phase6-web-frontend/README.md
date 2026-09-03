@@ -54,7 +54,7 @@ python3 fixtures/server.py
 | 5 週目 | 07〜08 | 非同期処理、モダン JS |
 | 6 週目 | 09 | TypeScript 入門 |
 | 7 週目 | 10〜11 | React 入門、状態管理 |
-| 8 週目 | 12 + project | パフォーマンス・SEO、総仕上げプロジェクト |
+| 8 週目 | 12〜13 + project | フロントエンドのテスト、パフォーマンス・SEO、総仕上げプロジェクト |
 
 ## ディレクトリ構成
 
@@ -73,7 +73,8 @@ phase6-web-frontend/
     09-typescript-intro.md
     10-react-basics.md
     11-state-and-data-fetching.md
-    12-performance-seo.md
+    12-frontend-testing.md
+    13-performance-seo.md
   exercises/
     ex01-html-semantics.md
     ex02-css-card.md
@@ -140,6 +141,8 @@ phase6-web-frontend/
 
 - [ ] 外部 API を使ったシングルページアプリを Vanilla JS で実装できる
 - [ ] 同じアプリを React + TypeScript で再実装できる
+- [ ] 主要ユーザーフローのコンポーネントテストを書き、`npm run test:run` が通る
+- [ ] loading・empty・error・競合するリクエストを、テストで再現して確認した
 - [ ] Lighthouse スコアで Performance 80 以上、Accessibility 90 以上を達成できる
 - [ ] [Phase 6 実技試験](assessment/)に合格した
 
