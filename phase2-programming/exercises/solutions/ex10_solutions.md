@@ -99,7 +99,7 @@ def log(msg, when=None):             # ○
 - 同じ入力なら必ず同じ出力
 - 外部の状態を変更しない
 
-純粋関数はテストが簡単で、並行実行しても安全で、`lru_cache` も付けられます。Phase 9 の設計、Phase 8 の並行処理まで、この性質がずっと効いてきます。
+純粋関数はテストが簡単で、並行実行しても安全で、`lru_cache` も付けられます。この性質は Phase 8 の並行処理まで効き続けます。設計の面は [Phase 9 Lesson 01](../../../phase9-software-design/lessons/01-what-is-good-code.md) にあり、**今から読めます。**
 
 **「関数が引数を変更するなら、それは名前で明示する」**のが作法です。`sort_in_place(lst)` と `sorted(lst)` のように。
 
