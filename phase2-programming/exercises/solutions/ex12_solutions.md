@@ -220,7 +220,7 @@ render(Circle(5))        # mypy は「形が合っている」ので通す
 
 **Protocol が特に効く場面**は、自分が変更できないクラス(標準ライブラリ、外部パッケージ)を型で受けたいときです。`Iterable`、`Sized`、`SupportsInt` など、標準ライブラリの型の多くが Protocol で定義されています。
 
-解答の `FakeShape` のように、テスト用の代替物を継承なしで渡せるのも大きな利点です。Phase 9 の「テストしやすい設計」に直結します。
+解答の `FakeShape` のように、テスト用の代替物を継承なしで渡せるのも大きな利点です。これは「テストしやすい設計」の中心にある考え方で、[Phase 9 Lesson 02](../../../phase9-software-design/lessons/02-function-class-design.md) で扱います。**このレッスンは Phase 2 を終えた今から読めます。**
 
 ---
 
