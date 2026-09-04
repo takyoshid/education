@@ -139,6 +139,16 @@ jobs:
         working-directory: ${{ matrix.directory }}
         # npm ci はロックのとおりに入らなければ失敗する。それが狙い。
         run: npm ci --ignore-scripts
+      - name: Use a newer npm for the fresh resolution
+        if: matrix.resolution == 'latest'
+        # Node 22 に同梱の npm 10 は、この依存関係を**ゼロから**解決できない。
+        # 途中で異常終了する(Cannot read properties of null (reading 'edgesOut'))。
+        #
+        # 学習者には影響しない。ロックがあれば npm 10 でも `npm ci` も
+        # `npm install` も通ることを確認済みで、壊れるのは
+        # 「ロックを無視して解決し直す」この検査だけ。
+        # 腐り検知は保守側の道具なので、ここだけ新しい npm を使う。
+        run: npm install -g npm@11
       - name: Install dependencies (fresh resolution)
         if: matrix.resolution == 'latest'
         working-directory: ${{ matrix.directory }}

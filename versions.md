@@ -10,6 +10,7 @@
 |---|---|---|
 | Python | 3.12 以上 | Phase 2 以降のすべて、教材同梱の API サーバ |
 | Node.js | 22 以上 | Phase 6 |
+| npm | Node.js 同梱のもの | Phase 6(腐り検知の CI だけ npm 11 を使う。理由は下記) |
 | PostgreSQL | 16 | Phase 7、Phase 10 |
 | React | 19 | Phase 6、Phase 12 |
 | TypeScript | 5.7 | Phase 6、Phase 12 |
@@ -110,6 +111,20 @@ Python 3.7 が `dict` の順序を保証した年は、100 年後も 2018 年の
 CI はこの 2 通りを両方実行します。Python 側で複数のバージョンを検査しているのと同じ考え方です(理由は [`phase10-infra-cloud/project/requirements.txt`](phase10-infra-cloud/project/requirements.txt) の冒頭に書いてあります)。
 
 **学習者は `npm install` を使ってください。** ロックがあればそのとおりに入り、将来ロックが使えなくなっても解決し直して先に進めます。厳しく落ちるのは CI の側だけでよく、学習者の手を止める必要はありません。
+
+### なぜ腐り検知だけ npm 11 を使うのか
+
+Node.js 22 に同梱の npm 10 は、Phase 6 の依存関係を**ゼロから**解決しようとすると異常終了します(`Cannot read properties of null (reading 'edgesOut')`)。Vitest 4 を入れた時点で起きるようになりました。
+
+**学習者には影響しません。**次を実際に確認済みです。
+
+| 経路 | npm 10 | 誰が使うか |
+|---|---|---|
+| `npm ci`(ロックあり) | 通る | CI の pinned 検査 |
+| `npm install`(ロックあり) | 通る | **学習者** |
+| ロックを無視して解決し直す | **異常終了** | CI の腐り検知だけ |
+
+壊れるのは最後の 1 つ、つまり保守用の検査だけです。だからそこにだけ新しい npm を入れます。**ロックをコミットしてある効果が、ここで効いています。**固定していなければ、学習者が同じ異常終了を踏んでいました。
 
 なお `phase6-web-frontend/assessment/starter/` にロックはありません。**依存がゼロだからです。**これは意図的な設計で、150 分の実技試験中にパッケージのインストールを発生させないためのものです。
 
