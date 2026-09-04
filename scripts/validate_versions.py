@@ -103,6 +103,52 @@ def check_workflow(declared: dict[str, str]) -> list[str]:
     return errors
 
 
+def load_declared_actions() -> dict[str, str]:
+    """versions.md の「CI が使う GitHub Actions」表から {アクション: 版} を読む。"""
+    text = VERSIONS_FILE.read_text(encoding="utf-8")
+    if "### CI が使う GitHub Actions" not in text:
+        return {}
+    section = text.split("### CI が使う GitHub Actions", 1)[1].split("\n**", 1)[0]
+    actions: dict[str, str] = {}
+    for line in section.splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        if len(cells) < 2 or "/" not in cells[0]:
+            continue
+        actions[cells[0]] = cells[1]
+    return actions
+
+
+def check_workflow_actions() -> list[str]:
+    """ワークフローが使うアクションの版が、表と一致しているか。
+
+    アクションの版は、提供元が実行基盤(Node.js)を上げるたびに古くなる。
+    警告のうちに気づけるよう、ここを表の管理下に置いている。
+    """
+    errors: list[str] = []
+    declared = load_declared_actions()
+    if not declared:
+        return ["versions.md に「CI が使う GitHub Actions」の表がありません"]
+
+    path = ROOT / ".github/workflows/curriculum-quality.yml"
+    rel = path.relative_to(ROOT)
+    used = set(re.findall(r"uses:\s*([\w.-]+/[\w.-]+)@(v[\w.-]+)", path.read_text(encoding="utf-8")))
+
+    for name, version in sorted(used):
+        want = declared.get(name)
+        if want is None:
+            errors.append(f"{rel}: {name} が versions.md の表にありません")
+        elif version != want:
+            errors.append(
+                f"{rel}: {name}@{version} を使っています。versions.md は {want}"
+            )
+    for name in declared:
+        if name not in {n for n, _ in used}:
+            errors.append(f"versions.md: {name} は表にありますが、使われていません")
+    return errors
+
+
 def check_package_json(declared: dict[str, str]) -> list[str]:
     """package.json の依存が表と一致しているか。"""
     errors: list[str] = []
@@ -118,6 +164,7 @@ def check_package_json(declared: dict[str, str]) -> list[str]:
         "@types/react-dom": "React",
         "typescript": "TypeScript",
         "vite": "Vite",
+        "vitest": "Vitest",
     }
     for name in targets:
         path = ROOT / name
@@ -314,6 +361,7 @@ def main() -> int:
 
     errors: list[str] = []
     errors += check_workflow(declared)
+    errors += check_workflow_actions()
     errors += check_package_json(declared)
     errors += check_docker_images(declared)
     errors += check_requirement_statements(declared)

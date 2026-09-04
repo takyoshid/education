@@ -232,8 +232,12 @@ import { getHistory, addToHistory } from "./storage.js";
 ```bash
 cd stage2-react
 npm install
-npm run dev
+npm run dev      # 開発サーバ
+npm test         # テストを監視モードで実行(別ターミナルで)
+npm run test:run # 1 回だけ実行
 ```
+
+`src/App.test.tsx` に、主要ユーザーフローのテストが書いてあります。**書き方はレッスン 12 で扱います。**まず読んで、次に自分の実装に対して書いてください。
 
 ### ディレクトリ構成
 
@@ -328,6 +332,7 @@ export function useWeather() {
 ### Stage 2 — React + TypeScript
 
 - [ ] Stage 1 と同等の機能がすべて動く
+- [ ] `npm run test:run` が通る(5つの状態、キーボード操作、競合を検証している)
 - [ ] TypeScript のコンパイルエラーが 0 件(`npm run build` が通る)
 - [ ] `any` を使っていない
 - [ ] カスタム hook がビジネスロジックをコンポーネントから分離できている
